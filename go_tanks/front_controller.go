@@ -1,7 +1,7 @@
 package go_tanks
 
 import (
-  "log"
+  log "./log"
 )
 
 type FrontController struct {
@@ -12,7 +12,7 @@ type FrontController struct {
 func (fc *FrontController) Accept () {
   for {
     client := <- fc.ClientsChannel
-    log.Println("CLIENT:\t New client connected (", client.RemoteAddr(), ")");
+    log.Client("New client connected ( ", client.RemoteAddr(), " )");
 
     fc.processClient(client)
   }

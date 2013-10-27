@@ -1,7 +1,7 @@
 package go_tanks
 
 import(
-  "log"
+  log "./log"
 )
 
 func NewServer(cfg Config) *Server {
@@ -17,7 +17,7 @@ type Server struct {
 func (srv *Server) Run () {
   srv.runWorld();
 
-  log.Println("Server starting...");
+  log.Server("Server starting...");
   srv.run()
 }
 
@@ -25,12 +25,10 @@ func (srv *Server) run () {
   tcpServer := TCPServer { Port: srv.config.Port, Address: srv.config.Address }
   channel := make(chan *Client)
 
-
   go tcpServer.run( channel )
 
   srv.frontController = &FrontController{ World: srv.world, ClientsChannel: channel }
   srv.frontController.Accept();
-
 }
 
 func (srv *Server) runWorld () {

@@ -1,7 +1,7 @@
 package go_tanks
 
 import (
-  "log"
+  log "./log"
   controllers "./controllers"
 )
 
@@ -18,7 +18,7 @@ func ( d * Dispatcher ) dispatch () {
     controller := controllers.AuthController{Client: d.Client}
     err := controller.Authorize()
     if ( err != nil ) { 
-      log.Println("ERROR:\t", err)
+      log.Error(err)
       d.Client.Close();
       return
     } 
