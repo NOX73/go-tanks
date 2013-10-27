@@ -11,12 +11,13 @@ type World struct {
 
 func (w *World) run () {
   go w.start();
+  log.Println("World started.");
 }
 
 func (w *World) start () {
   ticker := time.Tick(100 * time.Millisecond);
   for now := range ticker {
     w.moment = now
-    log.Println(now)
+    //log.Println(now)
   }
 }

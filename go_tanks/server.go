@@ -9,8 +9,9 @@ func NewServer(cfg Config) *Server {
 }
 
 type Server struct {
-  config  *Config
-  world   *World
+  config          *Config
+  world           *World
+  frontController *FrontController
 };
 
 func (srv *Server) Run () {
@@ -22,12 +23,18 @@ func (srv *Server) Run () {
 
 func (srv *Server) run () {
   tcpServer := TCPServer { Port: srv.config.Port, Address: srv.config.Address }
-  tcpServer.run()
+  channel := make(chan *Client)
+
+
+  go tcpServer.run( channel )
+
+  srv.frontController = &FrontController{ World: srv.world, ClientsChannel: channel }
+  srv.frontController.Accept();
+
 }
 
 func (srv *Server) runWorld () {
   srv.world = &World{};
   srv.world.run();
-  log.Println("World started");
 }
 
