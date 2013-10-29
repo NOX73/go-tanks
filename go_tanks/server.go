@@ -5,7 +5,7 @@ import(
 )
 
 func NewServer(cfg Config) *Server {
-  return &Server{config: &cfg}
+  return &Server{ config: &cfg }
 }
 
 type Server struct {
@@ -32,7 +32,7 @@ func (srv *Server) run () {
 }
 
 func (srv *Server) runWorld () {
-  srv.world = &World{};
+  srv.world = NewWorld( srv.config )
   srv.world.run();
 }
 

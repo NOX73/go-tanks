@@ -3,7 +3,7 @@ package go_tanks
 import (
   "net"
   "encoding/json"
-  interfaces "./interfaces"
+  i "./interfaces"
   "bufio"
   "errors"
 )
@@ -20,6 +20,8 @@ type Client struct {
   Reader      *bufio.Reader
   login       string
   password    string
+  TankId      int
+  channel     i.MessageChan
 }
 
 func (c *Client) RemoteAddr () (net.Addr) {
@@ -27,14 +29,19 @@ func (c *Client) RemoteAddr () (net.Addr) {
 }
 
 func NewClient(conn net.Conn) (*Client) {
-  return &Client{Connection: conn, State: NON_AUTHORIZED, Reader: bufio.NewReader(conn)}
+  return &Client{
+    Connection: conn,
+    State: NON_AUTHORIZED,
+    Reader: bufio.NewReader(conn),
+    channel: make(i.MessageChan, 5),
+  }
 }
 
 func (c *Client) Close () {
   c.Connection.Close()
 }
 
-func (c *Client) SendMessage ( m *interfaces.Message ) error {
+func (c *Client) SendMessage ( m *i.Message ) error {
   jsonStr, err := json.Marshal(m)
   if( err != nil ){ return err }
 
@@ -44,9 +51,9 @@ func (c *Client) SendMessage ( m *interfaces.Message ) error {
   return nil
 }
 
-func (c *Client) ReadMessage () ( *interfaces.Message, error ) {
+func (c *Client) ReadMessage () ( *i.Message, error ) {
   buffer := []byte(nil)
-  
+
   for {
     part, prefix, err := c.Reader.ReadLine()
     if err != nil { return nil, errors.New("Connection read error.") }
@@ -64,7 +71,7 @@ func (c *Client) ReadMessage () ( *interfaces.Message, error ) {
     break
   }
 
-  message := interfaces.Message{}
+  message := i.Message{}
   err := json.Unmarshal(buffer, &message)
   if( err != nil) { return nil, err }
 
@@ -76,11 +83,18 @@ func (c *Client) SetAuthCredentials ( login, password string) {
   c.password = password
 }
 
-func (c *Client) Login () string {
-  return c.login
+func (c *Client) Login () *string {
+  return &c.login
 }
 
-func (c *Client) Password () string {
-  return c.password
+func (c *Client) Password () *string {
+  return &c.password
 }
 
+func (c *Client) SetTankId (id int) {
+  c.TankId = id
+}
+
+func ( c *Client ) Channel () i.MessageChan {
+  return c.channel
+}

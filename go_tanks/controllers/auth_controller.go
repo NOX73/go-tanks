@@ -3,7 +3,7 @@ package go_tanks
 import (
   "errors"
   log "../log"
-  interfaces "../interfaces"
+  i "../interfaces"
   "fmt"
 )
 
@@ -12,18 +12,22 @@ const (
 )
 
 type AuthController struct {
-  Client  interfaces.Client
-  World   interface {} 
+  Controller
 }
 
-func (c *AuthController) Authorize () error {
+func ( c *AuthController ) Authorize () error {
   c.sendHello();
   c.readAuth();
-  return errors.New( fmt.Sprintf("Authorization failed with credentials: %s / %s", c.Client.Login(), c.Client.Password()) )
+
+  if ( !c.isAuthorized() ){
+    return errors.New( fmt.Sprintf("Authorization failed with credentials: %s / %s", c.Client.Login(), c.Client.Password() ) )
+  }
+
+  return nil
 }
 
 func ( c *AuthController ) sendHello () {
-  c.Client.SendMessage(&interfaces.Message{
+  c.Client.SendMessage( &i.Message{
     "message":  HELLO,
   })
 }
@@ -36,4 +40,8 @@ func ( c *AuthController ) readAuth () error {
   c.Client.SetAuthCredentials( message["login"].(string) , message["password"].(string) )
 
   return nil
+}
+
+func ( c * AuthController ) isAuthorized () bool {
+  return len( *c.Client.Login() ) > 0
 }

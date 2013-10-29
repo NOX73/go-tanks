@@ -23,7 +23,7 @@ func (srv *TCPServer) run (channel chan<- *Client) {
   srv.listener = listener
   if ( err != nil ) { log.Fatal(err) }
 
-  
+
   for {
     conn, err := listener.Accept()
     if (err != nil ) { log.Fatal( err ) }

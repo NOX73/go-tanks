@@ -19,6 +19,6 @@ func (fc *FrontController) Accept () {
 }
 
 func (fc *FrontController) processClient (client *Client) {
-  dispatcher := Dispatcher{Client: client, World: fc.World}
+  dispatcher := Dispatcher{ Client: client, World: fc.World }
   go dispatcher.run()
 }

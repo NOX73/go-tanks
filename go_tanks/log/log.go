@@ -8,6 +8,7 @@ const (
   ERROR = "ERROR:\t%s"
   FATAL = "FATAL:\t%s"
   SERVER = "SERVER:\t%s"
+  WORLD = "WORLD:\t%s"
 )
 
 func Client(v ...interface{}) {
@@ -24,4 +25,8 @@ func Server(v ...interface{}) {
 
 func Fatal(v ...interface{}) {
   log.Fatalf(FATAL, fmt.Sprint(v...))
+}
+
+func World(v ...interface{}) {
+  log.Printf(WORLD, fmt.Sprint(v...))
 }
