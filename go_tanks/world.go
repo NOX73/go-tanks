@@ -17,13 +17,19 @@ type Command struct {
 }
 
 type World struct {
+  TanksCounter    int
   Moment          time.Time
   TickDelay       time.Duration
   CommandChannel  chan *Command
+  Tanks           map[int]*Tank
 }
 
 func NewWorld (config *Config) *World {
-  return &World{ TickDelay: config.TickDelay, CommandChannel: make(chan *Command, 5) };
+  return &World{ 
+    TickDelay: config.TickDelay,
+    CommandChannel: make(chan *Command, 5),
+    Tanks: make( map[int]*Tank ),
+  };
 }
 
 func (w *World) run () {
@@ -62,8 +68,15 @@ func ( w *World ) NewTank ( channel i.MessageChan ) *i.Message {
   return <-channel
 }
 
+func ( w *World ) nextTankId () int {
+  w.TanksCounter++
+  return w.TanksCounter
+}
+
 func ( w *World ) addNewTank ( command *Command ) {
-  id := 1
+  id := w.nextTankId()
+  w.Tanks[id] = NewTank(id)
+
   message := &i.Message{ "id": id }
 
   log.World("New Tank with id = ", id)
