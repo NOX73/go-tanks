@@ -17,6 +17,7 @@ type Command struct {
 }
 
 type World struct {
+  Map             *Map
   TanksCounter    int
   Moment          time.Time
   TickDelay       time.Duration
@@ -29,6 +30,7 @@ func NewWorld (config *Config) *World {
     TickDelay: config.TickDelay,
     CommandChannel: make(chan *Command, 5),
     Tanks: make( map[int]*Tank ),
+    Map: NewMap(config),
   };
 }
 
@@ -75,9 +77,10 @@ func ( w *World ) nextTankId () int {
 
 func ( w *World ) addNewTank ( command *Command ) {
   id := w.nextTankId()
-  w.Tanks[id] = NewTank(id)
+  coords := w.Map.GetRandomCoords()
+  w.Tanks[id] = NewTank(id, coords)
 
-  message := &i.Message{ "id": id }
+  message := &i.Message{ "id": id, "tank": w.Tanks[id] }
 
   log.World("New Tank with id = ", id)
   command.Channel <- message

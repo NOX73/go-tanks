@@ -16,8 +16,6 @@ func ( c *GameController ) JoinToGame () error {
   m := c.World.NewTank( ch )
   message := *m
 
-  //message := i.Message{"id":3}
-
   message["message"] = "Your tank id"
 
   c.Client.SetTankId( message["id"].(int) )
