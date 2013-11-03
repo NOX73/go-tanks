@@ -14,6 +14,11 @@ const (
   EOL = "\n"
 )
 
+const (
+  INBOX_CAPACITY = 5
+  OUTBOX_CAPACITY = 5
+)
+
 type Client struct {
   Connection  net.Conn
   State       int
@@ -21,7 +26,8 @@ type Client struct {
   login       string
   password    string
   TankId      int
-  channel     i.MessageChan
+  outBox      i.MessageChan
+  inBox       i.MessageChan
 }
 
 func (c *Client) RemoteAddr () (net.Addr) {
@@ -33,7 +39,8 @@ func NewClient(conn net.Conn) (*Client) {
     Connection: conn,
     State: NON_AUTHORIZED,
     Reader: bufio.NewReader(conn),
-    channel: make(i.MessageChan, 5),
+    inBox: make(i.MessageChan, INBOX_CAPACITY),
+    outBox: make(i.MessageChan, OUTBOX_CAPACITY),
   }
 }
 
@@ -95,6 +102,28 @@ func (c *Client) SetTankId (id int) {
   c.TankId = id
 }
 
-func ( c *Client ) Channel () i.MessageChan {
-  return c.channel
+func ( c *Client ) InBox () i.MessageChan {
+  return c.inBox
 }
+
+func ( c *Client ) OutBox () i.MessageChan {
+  return c.outBox
+}
+
+func ( c *Client ) ReadInBox () *i.Message {
+  return <-c.inBox
+}
+
+func ( c * Client ) WriteInBox ( m *i.Message ) {
+  c.inBox <- m
+}
+
+func ( c *Client ) ReadOutBox () *i.Message {
+  return <-c.outBox
+}
+
+func ( c * Client ) WriteOutBox ( m *i.Message )  {
+  c.outBox <- m
+  
+}
+

@@ -1,5 +1,6 @@
 package go_tanks
 
 type World interface {
-  NewTank ( channel MessageChan ) *Message
+  NewTank ( client Client )
+  AttachClient ( client Client )
 }

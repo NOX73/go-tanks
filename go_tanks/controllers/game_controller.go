@@ -10,11 +10,10 @@ type GameController struct {
 }
 
 func ( c *GameController ) JoinToGame () error {
+  c.addToWorld()
 
-  ch := c.Client.Channel()
-
-  m := c.World.NewTank( ch )
-  message := *m
+  c.World.NewTank( c.Client )
+  message := *(c.Client.ReadInBox())
 
   message["message"] = "Your tank id"
 
@@ -22,4 +21,8 @@ func ( c *GameController ) JoinToGame () error {
   c.Client.SendMessage( &message )
 
   return nil
+}
+
+func ( c *GameController ) addToWorld () {
+  c.World.AttachClient( c.Client )
 }

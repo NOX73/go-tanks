@@ -8,27 +8,23 @@ import (
 
 const (
   NEW_TANK = iota
+  NEW_CLIENT
 )
-
-type Command struct {
-  Type      int
-  Channel   i.MessageChan
-  Data      *i.Message
-}
 
 type World struct {
   Map             *Map
   TanksCounter    int
   Moment          time.Time
   TickDelay       time.Duration
-  CommandChannel  chan *Command
+  CommandChannel  i.MessageChan
   Tanks           map[int]*Tank
+  Clients         []i.Client
 }
 
 func NewWorld (config *Config) *World {
   return &World{ 
     TickDelay: config.TickDelay,
-    CommandChannel: make(chan *Command, 5),
+    CommandChannel: make(i.MessageChan, 5),
     Tanks: make( map[int]*Tank ),
     Map: NewMap(config),
   };
@@ -43,31 +39,45 @@ func (w *World) start () {
   ticker := time.Tick( w.TickDelay * time.Millisecond );
   for now := range ticker {
     w.Moment = now
+    w.processClientsCommands()
     w.processCommands()
+  }
+}
+
+func ( w *World ) processClientsCommands () {
+  for _, client := range w.Clients  {
+    select {
+    case command := <-client.OutBox():
+      w.processCommand( command, client )
+    default:
+    }
   }
 }
 
 func ( w *World ) processCommands () {
   count := len( w.CommandChannel )
-  for i := 0; i < count; i++ {
-    command := <-w.CommandChannel
-    w.processCommand( command )
+  for i:=0; i < count; i++ {
+    command := <- w.CommandChannel
+    w.processCommand( command, nil )
   }
 }
 
-func ( w *World ) processCommand ( command *Command ) {
-  switch command.Type {
+func ( w *World ) AttachClient ( client i.Client ) {
+  w.CommandChannel <- &i.Message{"type": NEW_CLIENT, "client": client}
+}
+
+func ( w *World ) processCommand ( command *i.Message, client i.Client ) {
+  switch command.GetType() {
   case NEW_TANK:
-    w.addNewTank( command )
+    w.addNewTank( client )
+  case NEW_CLIENT:
+    w.addNewClient( (*command)["client"].(i.Client) )
   }
 }
 
-func ( w *World ) NewTank ( channel i.MessageChan ) *i.Message {
-  command := Command{ Type: NEW_TANK, Channel: channel }
-
-  w.CommandChannel <- &command
-
-  return <-channel
+func ( w *World ) NewTank ( client i.Client ) {
+  message := i.Message{"type": NEW_TANK}
+  client.WriteOutBox( &message )
 }
 
 func ( w *World ) nextTankId () int {
@@ -75,13 +85,19 @@ func ( w *World ) nextTankId () int {
   return w.TanksCounter
 }
 
-func ( w *World ) addNewTank ( command *Command ) {
+func ( w *World ) addNewTank ( client i.Client ) {
   id := w.nextTankId()
   coords := w.Map.GetRandomCoords()
-  w.Tanks[id] = NewTank(id, coords)
+  tank := NewTank(id, coords)
+  w.Tanks[id] = tank
 
-  message := &i.Message{ "id": id, "tank": w.Tanks[id] }
+  replay := i.Message{ "id": id, "tank": tank }
 
   log.World("New Tank with id = ", id)
-  command.Channel <- message
+  client.WriteInBox( &replay )
+}
+
+func ( w *World ) addNewClient ( client i.Client ) {
+  log.World("New client.")
+  w.Clients = append( w.Clients, client )
 }
