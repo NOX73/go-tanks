@@ -33,18 +33,18 @@ type Client struct {
   jsonBox     chan *[]byte
 }
 
-func (c *Client) RemoteAddr () (net.Addr) {
+func ( c *Client )  RemoteAddr () ( net.Addr ) {
   return c.Connection.RemoteAddr()
 }
 
-func NewClient(conn net.Conn) (*Client) {
+func NewClient ( conn net.Conn ) ( *Client ) {
   client := &Client{
     Connection: conn,
     State: NON_AUTHORIZED,
     Reader: bufio.NewReader(conn),
-    inBox: make(i.MessageChan, INBOX_CAPACITY),
-    outBox: make(i.MessageChan, OUTBOX_CAPACITY),
-    jsonBox: make( chan *[]byte, CLIENT_BUFFER_CAPACITY),
+    inBox: make( i.MessageChan, INBOX_CAPACITY ),
+    outBox: make( i.MessageChan, OUTBOX_CAPACITY ),
+    jsonBox: make( chan *[]byte, CLIENT_BUFFER_CAPACITY ),
   }
   client.Init()
   return client
@@ -54,23 +54,26 @@ func ( c *Client ) Init () {
   go c.startSendJsonLoop()
 }
 
-func (c *Client) Close () {
+func ( c *Client ) Close () {
   c.Connection.Close()
 }
 
-func (c *Client) SendMessage ( m *i.Message ) error {
-  jsonStr, err := json.Marshal(m)
+func ( c *Client ) SendMessage ( m *i.Message ) error {
+  jsonStr, err := json.Marshal( m )
   if( err != nil ){ return err }
 
-  err = c.sendJson(&jsonStr)
-  if(err != nil){ log.Client(err); return err }
+  err = c.sendJson( &jsonStr )
+  if(err != nil) {
+    log.Client(err)
+    return err 
+  }
 
   return nil
 }
 
-func ( c *Client) sendJson ( json *[]byte ) error {
+func ( c *Client ) sendJson ( json *[]byte ) error {
 
-  select{
+  select {
     case c.jsonBox <- json:
       return nil
     default:
@@ -82,12 +85,12 @@ func ( c *Client) sendJson ( json *[]byte ) error {
 
 func ( c *Client ) startSendJsonLoop () {
   for jsonStr := range c.jsonBox {
-    c.Connection.Write(*jsonStr)
-    c.Connection.Write([]byte(EOL))
+    c.Connection.Write( *jsonStr )
+    c.Connection.Write( []byte(EOL) )
   }
 }
 
-func (c *Client) ReadMessage () ( *i.Message, error ) {
+func ( c *Client ) ReadMessage () ( *i.Message, error ) {
   buffer := []byte(nil)
 
   for {
@@ -96,12 +99,12 @@ func (c *Client) ReadMessage () ( *i.Message, error ) {
 
     if len(part) == 0 { continue }
 
-    buffer = append(buffer, part...)
+    buffer = append( buffer, part... )
 
     for prefix && err == nil {
       part, prefix, err = c.Reader.ReadLine()
       if err != nil { return nil, errors.New("Connection read error.") }
-      buffer = append(buffer, part...)
+      buffer = append( buffer, part... )
     }
 
     break
@@ -114,20 +117,20 @@ func (c *Client) ReadMessage () ( *i.Message, error ) {
   return &message, nil
 }
 
-func (c *Client) SetAuthCredentials ( login, password string) {
+func ( c *Client ) SetAuthCredentials ( login, password string ) {
   c.login = login
   c.password = password
 }
 
-func (c *Client) Login () *string {
+func ( c *Client ) Login () *string {
   return &c.login
 }
 
-func (c *Client) Password () *string {
+func ( c *Client ) Password () *string {
   return &c.password
 }
 
-func (c *Client) SetTankId (id int) {
+func ( c *Client ) SetTankId (id int) {
   c.TankId = id
 }
 
@@ -158,6 +161,6 @@ func ( c * Client ) WriteOutBox ( m *i.Message )  {
 
 func ( c *Client ) SendWorld ( m *i.Message ) {
   err := c.SendMessage(m)
-  if(err != nil){log.Error(err)}
+  if( err != nil ) { log.Error(err) }
 }
 
