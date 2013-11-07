@@ -20,6 +20,8 @@ type Client interface {
   WriteInBox ( *Message )
   ReadOutBox () *Message
   WriteOutBox ( *Message )
+
+  SendWorld ( *Message )
 }
 
 func ( m *Message ) GetType () interface{} {

@@ -6,6 +6,7 @@ import (
   i "./interfaces"
   "bufio"
   "errors"
+  log "./log"
 )
 
 const (
@@ -17,6 +18,7 @@ const (
 const (
   INBOX_CAPACITY = 5
   OUTBOX_CAPACITY = 5
+  CLIENT_BUFFER_CAPACITY = 5
 )
 
 type Client struct {
@@ -28,6 +30,7 @@ type Client struct {
   TankId      int
   outBox      i.MessageChan
   inBox       i.MessageChan
+  jsonBox     chan *[]byte
 }
 
 func (c *Client) RemoteAddr () (net.Addr) {
@@ -35,13 +38,20 @@ func (c *Client) RemoteAddr () (net.Addr) {
 }
 
 func NewClient(conn net.Conn) (*Client) {
-  return &Client{
+  client := &Client{
     Connection: conn,
     State: NON_AUTHORIZED,
     Reader: bufio.NewReader(conn),
     inBox: make(i.MessageChan, INBOX_CAPACITY),
     outBox: make(i.MessageChan, OUTBOX_CAPACITY),
+    jsonBox: make( chan *[]byte, CLIENT_BUFFER_CAPACITY),
   }
+  client.Init()
+  return client
+}
+
+func ( c *Client ) Init () {
+  go c.startSendJsonLoop()
 }
 
 func (c *Client) Close () {
@@ -52,10 +62,29 @@ func (c *Client) SendMessage ( m *i.Message ) error {
   jsonStr, err := json.Marshal(m)
   if( err != nil ){ return err }
 
-  c.Connection.Write(jsonStr)
-  c.Connection.Write([]byte(EOL))
+  err = c.sendJson(&jsonStr)
+  if(err != nil){ log.Client(err); return err }
 
   return nil
+}
+
+func ( c *Client) sendJson ( json *[]byte ) error {
+
+  select{
+    case c.jsonBox <- json:
+      return nil
+    default:
+      return errors.New("Slow client")
+  }
+
+  return nil
+}
+
+func ( c *Client ) startSendJsonLoop () {
+  for jsonStr := range c.jsonBox {
+    c.Connection.Write(*jsonStr)
+    c.Connection.Write([]byte(EOL))
+  }
 }
 
 func (c *Client) ReadMessage () ( *i.Message, error ) {
@@ -125,5 +154,10 @@ func ( c *Client ) ReadOutBox () *i.Message {
 func ( c * Client ) WriteOutBox ( m *i.Message )  {
   c.outBox <- m
   
+}
+
+func ( c *Client ) SendWorld ( m *i.Message ) {
+  err := c.SendMessage(m)
+  if(err != nil){log.Error(err)}
 }
 

@@ -41,7 +41,30 @@ func (w *World) start () {
     w.Moment = now
     w.processClientsCommands()
     w.processCommands()
+    w.calculateWorld()
+    w.sendWorldToClients()
   }
+}
+
+func ( w *World ) sendWorldToClients () {
+  tanks := make([]*Tank, len(w.Tanks))
+
+  n := 0
+  for _, tank := range w.Tanks {
+    tanks[n] = tank
+    n++
+  }
+
+  snapShot := &i.Message{
+    "Tanks": tanks,
+    "Map": w.Map,
+  }
+
+  for _, client := range w.Clients {
+    client.SendWorld( snapShot );
+  }
+}
+func ( w *World ) calculateWorld () {
 }
 
 func ( w *World ) processClientsCommands () {
