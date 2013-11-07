@@ -74,7 +74,7 @@ func ( c *Client) sendJson ( json *[]byte ) error {
     case c.jsonBox <- json:
       return nil
     default:
-      return errors.New("Slow client")
+      return errors.New("Slow client.")
   }
 
   return nil
