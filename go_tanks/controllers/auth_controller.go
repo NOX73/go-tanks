@@ -28,7 +28,7 @@ func ( c *AuthController ) Authorize () error {
 
 func ( c *AuthController ) sendHello () {
   c.Client.SendMessage( &i.Message{
-    "message":  HELLO,
+    "Message":  HELLO,
   })
 }
 
@@ -37,7 +37,13 @@ func ( c *AuthController ) readAuth () error {
   if err != nil { log.Error("Auth failed: ", err); return err }
   message := *m
 
-  c.Client.SetAuthCredentials( message["login"].(string) , message["password"].(string) )
+  login := message["Login"];
+  password := message["Password"];
+
+  if( login == nil ) { login = "" }
+  if( password == nil ) { password = "" }
+
+  c.Client.SetAuthCredentials( login.(string) , password.(string) )
 
   return nil
 }

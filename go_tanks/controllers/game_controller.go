@@ -15,10 +15,16 @@ func ( c *GameController ) JoinToGame () error {
   c.World.NewTank( c.Client )
   message := *(c.Client.ReadInBox())
 
-  message["message"] = "Your tank id"
+  message["Message"] = "Your tank id"
 
-  c.Client.SetTankId( message["id"].(int) )
+  c.Client.SetTankId( message["Id"].(int) )
   c.Client.SendMessage( &message )
+
+  //for {
+    //_, err := c.Client.ReadMessage()
+    //if ( err != nil ) { continue }
+
+  //}
 
   return nil
 }

@@ -25,5 +25,5 @@ type Client interface {
 }
 
 func ( m *Message ) GetType () interface{} {
-  return (*m)["type"].(int)
+  return (*m)["Type"].(int)
 }

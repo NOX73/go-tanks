@@ -86,7 +86,7 @@ func ( w *World ) processCommands () {
 }
 
 func ( w *World ) AttachClient ( client i.Client ) {
-  w.CommandChannel <- &i.Message{"type": NEW_CLIENT, "client": client}
+  w.CommandChannel <- &i.Message{"Type": NEW_CLIENT, "Client": client}
 }
 
 func ( w *World ) processCommand ( command *i.Message, client i.Client ) {
@@ -94,12 +94,12 @@ func ( w *World ) processCommand ( command *i.Message, client i.Client ) {
   case NEW_TANK:
     w.addNewTank( client )
   case NEW_CLIENT:
-    w.addNewClient( (*command)["client"].(i.Client) )
+    w.addNewClient( (*command)["Client"].(i.Client) )
   }
 }
 
 func ( w *World ) NewTank ( client i.Client ) {
-  message := i.Message{"type": NEW_TANK}
+  message := i.Message{"Type": NEW_TANK}
   client.WriteOutBox( &message )
 }
 
@@ -114,7 +114,7 @@ func ( w *World ) addNewTank ( client i.Client ) {
   tank := NewTank(id, coords)
   w.Tanks[id] = tank
 
-  replay := i.Message{ "id": id, "tank": tank }
+  replay := i.Message{ "Id": id, "Tank": tank }
 
   log.World("New Tank with id = ", id)
   client.WriteInBox( &replay )
