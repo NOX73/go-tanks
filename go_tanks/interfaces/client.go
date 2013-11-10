@@ -22,8 +22,13 @@ type Client interface {
   WriteOutBox ( *Message )
 
   SendWorld ( *Message )
+  SetWorldRecieveDisabled( bool )
 }
 
 func ( m *Message ) GetType () interface{} {
   return (*m)["Type"].(int)
+}
+
+func ErrorMessage ( message string ) *Message {
+  return &Message{"Type":"Error", "Message": message}
 }

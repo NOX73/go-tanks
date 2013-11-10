@@ -31,6 +31,7 @@ type Client struct {
   outBox      i.MessageChan
   inBox       i.MessageChan
   jsonBox     chan *[]byte
+  worldRecieveDisabled bool
 }
 
 func ( c *Client )  RemoteAddr () ( net.Addr ) {
@@ -45,6 +46,7 @@ func NewClient ( conn net.Conn ) ( *Client ) {
     inBox: make( i.MessageChan, INBOX_CAPACITY ),
     outBox: make( i.MessageChan, OUTBOX_CAPACITY ),
     jsonBox: make( chan *[]byte, CLIENT_BUFFER_CAPACITY ),
+    worldRecieveDisabled: false,
   }
   client.Init()
   return client
@@ -156,11 +158,15 @@ func ( c *Client ) ReadOutBox () *i.Message {
 
 func ( c * Client ) WriteOutBox ( m *i.Message )  {
   c.outBox <- m
-  
 }
 
 func ( c *Client ) SendWorld ( m *i.Message ) {
+  if( c.worldRecieveDisabled ) { return }
+
   err := c.SendMessage(m)
   if( err != nil ) { log.Error(err) }
 }
 
+func ( c *Client ) SetWorldRecieveDisabled ( val bool ) {
+  c.worldRecieveDisabled = val
+}
