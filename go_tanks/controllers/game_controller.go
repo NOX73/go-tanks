@@ -3,6 +3,7 @@ package go_tanks
 import (
   //log "../log"
   //i "../interfaces"
+  v "../validators"
 )
 
 type GameController struct {
@@ -20,11 +21,12 @@ func ( c *GameController ) JoinToGame () error {
   c.Client.SetTankId( message["Id"].(int) )
   c.Client.SendMessage( &message )
 
-  //for {
-    //_, err := c.Client.ReadMessage()
-    //if ( err != nil ) { continue }
+  for { 
+    message, err := c.Client.ReadMessage()
+    if( err != nil ) { continue }
 
-  //}
+    v.ValidateUserMessage( message )
+  }
 
   return nil
 }

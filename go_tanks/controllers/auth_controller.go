@@ -5,6 +5,7 @@ import (
   log "../log"
   i "../interfaces"
   "fmt"
+  v "../validators"
 )
 
 const (
@@ -29,21 +30,19 @@ func ( c *AuthController ) Authorize () error {
 func ( c *AuthController ) sendHello () {
   c.Client.SendMessage( &i.Message{
     "Message":  HELLO,
+    "Type": "Auth",
   })
 }
 
 func ( c *AuthController ) readAuth () error {
   m, err := c.Client.ReadMessage()
   if err != nil { log.Error("Auth failed: ", err); return err }
+
+  err = v.ValidateAuthForm(m)
+  if( err != nil ) { c.Client.SendMessage( &i.Message{ "Type": "Error", "Message": err.Error() } ); return err }
+
   message := *m
-
-  login := message["Login"];
-  password := message["Password"];
-
-  if( login == nil ) { login = "" }
-  if( password == nil ) { password = "" }
-
-  c.Client.SetAuthCredentials( login.(string) , password.(string) )
+  c.Client.SetAuthCredentials( message["Login"].(string) , message["Password"].(string) )
 
   return nil
 }
