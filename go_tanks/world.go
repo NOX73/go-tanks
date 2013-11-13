@@ -6,12 +6,6 @@ import (
   i "./interfaces"
 )
 
-const (
-  NEW_TANK = iota
-  NEW_CLIENT
-  REMOVE_CLIENT
-)
-
 type World struct {
   Map             *Map
   TanksCounter    int
@@ -88,26 +82,31 @@ func ( w *World ) processCommands () {
 }
 
 func ( w *World ) AttachClient ( client i.Client ) {
-  w.CommandChannel <- &i.Message{"Type": NEW_CLIENT, "Client": client}
+  w.CommandChannel <- &i.Message{"TypeId": i.NEW_CLIENT, "Client": client}
 }
 
 func ( w *World ) DetachClient ( client i.Client ) {
-  w.CommandChannel <- &i.Message{"Type": REMOVE_CLIENT, "Client": client}
+  w.CommandChannel <- &i.Message{"TypeId": i.REMOVE_CLIENT, "Client": client}
 }
 
-func ( w *World ) processCommand ( command *i.Message, client i.Client ) {
-  switch command.GetType() {
-  case NEW_TANK:
+func ( w *World ) processCommand ( m *i.Message, client i.Client ) {
+  message := *m 
+  if( client == nil){ client = message["Client"].(i.Client) }
+
+  switch message.GetTypeId() {
+  case i.NEW_TANK:
     w.addNewTank( client )
-  case REMOVE_CLIENT:
-    w.removeClient( (*command)["Client"].(i.Client) )
-  case NEW_CLIENT:
-    w.addNewClient( (*command)["Client"].(i.Client) )
+  case i.REMOVE_CLIENT:
+    w.removeClient( client )
+  case i.NEW_CLIENT:
+    w.addNewClient( client )
+  case i.TANK_COMMAND:
+    log.World("Receive tanks command")
   }
 }
 
 func ( w *World ) NewTank ( client i.Client ) {
-  message := i.Message{"Type": NEW_TANK}
+  message := i.Message{"TypeId": i.NEW_TANK}
   client.WriteOutBox( &message )
 }
 

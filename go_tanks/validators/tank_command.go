@@ -9,11 +9,21 @@ import (
 func ValidateTankCommandMessage ( m *i.Message  ) error {
   message := *m
 
-  if LeftMotor, ok := message["LeftMotor"].(float64); !ok {
-    errors.New("LeftMotor paramentr should be float.")
-  } else {
-    if LeftMotor < 0 || LeftMotor > 1 {
+  if message["LeftMotor"] != nil {
+    val, ok := message["LeftMotor"].(float64)
+    if !ok { return errors.New("LeftMotor paramentr should be float.") }
+
+    if val < 0 || val > 1 {
       return errors.New("LeftMotor paramentr should be in [0..1]")
+    }
+  }
+
+  if message["RightMotor"] != nil {
+    val, ok := message["RightMotor"].(float64)
+    if !ok { return errors.New("RightMotor paramentr should be float.") }
+
+    if val < 0 || val > 1 {
+      return errors.New("RightMotor paramentr should be in [0..1]")
     }
   }
 

@@ -14,4 +14,3 @@ func ValidateType ( m *i.Message ) error {
   return nil
 }
 
-

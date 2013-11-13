@@ -1,5 +1,12 @@
 package go_tanks
 
+const (
+  NEW_TANK = iota
+  NEW_CLIENT
+  REMOVE_CLIENT
+  TANK_COMMAND
+)
+
 type Message            map[string]interface{}
 type MessageChan        chan *Message
 type Tank interface {}
@@ -28,8 +35,17 @@ type Client interface {
   SetWorldRecieveDisabled( bool )
 }
 
-func ( m *Message ) GetType () interface{} {
-  return (*m)["Type"].(int)
+var typeToIdMaping = map[string]int {
+  "TankCommand": TANK_COMMAND,
+}
+
+func ( m *Message ) GetTypeId () interface{} {
+  message := *m
+  if message["TypeId"] == nil {
+    message["TypeId"] = typeToIdMaping[ message["Type"].(string) ]
+  }
+
+  return message["TypeId"].(int)
 }
 
 func ErrorMessage ( message string ) *Message {
