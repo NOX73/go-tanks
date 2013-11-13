@@ -6,6 +6,7 @@ import "fmt"
 const (
   CLIENT = "CLIENT:\t%s"
   ERROR = "ERROR:\t%s"
+  WARNING = "WARNING:\t%s"
   FATAL = "FATAL:\t%s"
   SERVER = "SERVER:\t%s"
   WORLD = "WORLD:\t%s"
@@ -26,6 +27,10 @@ func Server(v ...interface{}) {
 
 func Fatal(v ...interface{}) {
   log.Fatalf(FATAL, fmt.Sprint(v...))
+}
+
+func Warning(v ...interface{}) {
+  log.Fatalf(WARNING, fmt.Sprint(v...))
 }
 
 func World(v ...interface{}) {

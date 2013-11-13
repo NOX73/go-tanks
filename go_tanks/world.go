@@ -9,6 +9,7 @@ import (
 const (
   NEW_TANK = iota
   NEW_CLIENT
+  REMOVE_CLIENT
 )
 
 type World struct {
@@ -89,10 +90,16 @@ func ( w *World ) AttachClient ( client i.Client ) {
   w.CommandChannel <- &i.Message{"Type": NEW_CLIENT, "Client": client}
 }
 
+func ( w *World ) DetachClient ( client i.Client ) {
+  w.CommandChannel <- &i.Message{"Type": REMOVE_CLIENT, "Client": client}
+}
+
 func ( w *World ) processCommand ( command *i.Message, client i.Client ) {
   switch command.GetType() {
   case NEW_TANK:
     w.addNewTank( client )
+  case REMOVE_CLIENT:
+    w.removeClient( (*command)["Client"].(i.Client) )
   case NEW_CLIENT:
     w.addNewClient( (*command)["Client"].(i.Client) )
   }
@@ -121,6 +128,23 @@ func ( w *World ) addNewTank ( client i.Client ) {
 }
 
 func ( w *World ) addNewClient ( client i.Client ) {
-  log.World("New client.")
   w.Clients = append( w.Clients, client )
+  log.World("Client added. Clients count = ", len( w.Clients ))
+}
+
+
+func ( w *World) removeClient ( client i.Client ) {
+  index := -1;
+  for i, c := range w.Clients {
+
+    if c == client {
+      index = i
+      break
+    }
+  }
+
+  if index < 0 { log.Warning("Client doesn't removed."); return }
+
+  w.Clients = append(w.Clients[:index], w.Clients[index + 1:]...)
+  log.World("Client removed. Clients count = ", len( w.Clients ))
 }

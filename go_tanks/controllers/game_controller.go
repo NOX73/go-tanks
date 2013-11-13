@@ -22,9 +22,12 @@ func ( c *GameController ) JoinToGame () error {
   c.Client.SetTankId( message["Id"].(int) )
   c.Client.SendMessage( &message )
 
-  for { 
+  for {
     message, err := c.Client.ReadMessage()
-    if( err != nil ) { continue }
+    if( err != nil ) {
+      c.removeFromWorld()
+      return err
+    }
 
     err = v.ValidateUserMessage( message )
 
@@ -38,6 +41,10 @@ func ( c *GameController ) JoinToGame () error {
 
 func ( c *GameController ) addToWorld () {
   c.World.AttachClient( c.Client )
+}
+
+func ( c *GameController ) removeFromWorld () {
+  c.World.DetachClient( c.Client )
 }
 
 func ( c *GameController ) handleMessage ( m *i.Message ) error {

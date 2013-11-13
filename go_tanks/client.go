@@ -97,7 +97,7 @@ func ( c *Client ) ReadMessage () ( *i.Message, error ) {
 
   for {
     part, prefix, err := c.Reader.ReadLine()
-    if err != nil { return nil, errors.New("Connection read error.") }
+    if err != nil { return nil, err }
 
     if len(part) == 0 { continue }
 
@@ -105,7 +105,7 @@ func ( c *Client ) ReadMessage () ( *i.Message, error ) {
 
     for prefix && err == nil {
       part, prefix, err = c.Reader.ReadLine()
-      if err != nil { return nil, errors.New("Connection read error.") }
+      if err != nil { return nil, err }
       buffer = append( buffer, part... )
     }
 
