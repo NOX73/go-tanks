@@ -27,7 +27,7 @@ type Client struct {
   Reader      *bufio.Reader
   login       string
   password    string
-  TankId      int
+  Tank        *Tank
   outBox      i.MessageChan
   inBox       i.MessageChan
   jsonBox     chan *[]byte
@@ -132,8 +132,16 @@ func ( c *Client ) Password () *string {
   return &c.password
 }
 
-func ( c *Client ) SetTankId (id int) {
-  c.TankId = id
+func ( c *Client ) HasTank () bool {
+  return c.Tank != nil
+}
+
+func ( c *Client ) SetTank ( tank interface{} ) {
+  c.Tank = tank.(*Tank)
+}
+
+func ( c *Client ) GetTank () interface{} {
+  return c.Tank
 }
 
 func ( c *Client ) InBox () i.MessageChan {

@@ -57,6 +57,7 @@ func ( w *World ) sendWorldToClients () {
   }
 
   snapShot := &i.Message{
+    "Type": "World",
     "Tanks": tanks,
     "Map": w.Map,
   }
@@ -121,10 +122,15 @@ func ( w *World ) addNewTank ( client i.Client ) {
   tank := NewTank(id, coords)
   w.Tanks[id] = tank
 
-  replay := i.Message{ "Id": id, "Tank": tank }
+  replay := i.Message{ "Tank": tank, "Type": "Tank" }
 
   log.World("New Tank with id = ", id)
   client.WriteInBox( &replay )
+}
+
+func ( w *World ) removeTank ( tank *Tank ) {
+  delete( w.Tanks, tank.Id )
+  log.World("Tank with id = ", tank.Id, " was removed.")
 }
 
 func ( w *World ) addNewClient ( client i.Client ) {
@@ -143,7 +149,12 @@ func ( w *World) removeClient ( client i.Client ) {
     }
   }
 
-  if index < 0 { log.Warning("Client doesn't removed."); return }
+  if index < 0 { log.Warning("Client hasn't been removed."); return }
+
+  if client.HasTank() {
+    tank := client.GetTank().(*Tank)
+    w.removeTank( tank ) 
+  }
 
   w.Clients = append(w.Clients[:index], w.Clients[index + 1:]...)
   log.World("Client removed. Clients count = ", len( w.Clients ))

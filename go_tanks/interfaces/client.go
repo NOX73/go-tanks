@@ -2,13 +2,16 @@ package go_tanks
 
 type Message            map[string]interface{}
 type MessageChan        chan *Message
+type Tank interface {}
 
 type Client interface {
   SendMessage ( *Message ) error
   ReadMessage () ( *Message, error )
 
   SetAuthCredentials ( login, password string)
-  SetTankId ( int )
+  SetTank ( interface{} )
+  GetTank () interface{}
+  HasTank () bool
 
   Login () *string
   Password () *string
