@@ -101,8 +101,16 @@ func ( w *World ) processCommand ( m *i.Message, client i.Client ) {
   case i.NEW_CLIENT:
     w.addNewClient( client )
   case i.TANK_COMMAND:
-    log.World("Receive tanks command")
+    w.processTankCommand( m, client )
   }
+}
+
+func ( w *World ) processTankCommand ( m *i.Message, client i.Client ) {
+  message := *m
+  tank := client.GetTank().(*Tank)
+
+  if message["LeftMotor"] != nil { tank.LeftMotor = message["LeftMotor"].(float64)  }
+  if message["RightMotor"] != nil { tank.RightMotor = message["RightMotor"].(float64)  }
 }
 
 func ( w *World ) NewTank ( client i.Client ) {
