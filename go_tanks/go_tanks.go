@@ -10,6 +10,7 @@ type Config struct {
         TickDelay       time.Duration
         mapWidth        int
         mapHeight       int
+        TickSpeed       int
 }
 
 var DefaultConfig = Config{
@@ -18,4 +19,5 @@ var DefaultConfig = Config{
         TickDelay:  100,
         mapWidth:   1024,
         mapHeight:  768,
+        TickSpeed:  20,
 }

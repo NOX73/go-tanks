@@ -7,22 +7,23 @@ import (
 )
 
 type World struct {
-  Map             *Map
   TanksCounter    int
   Moment          time.Time
   TickDelay       time.Duration
   CommandChannel  i.MessageChan
-  Tanks           map[int]*Tank
   Clients         []i.Client
+  Live            *Live
 }
 
-func NewWorld (config *Config) *World {
-  return &World{ 
+func NewWorld ( config *Config ) *World {
+
+  world := &World{ 
     TickDelay: config.TickDelay,
     CommandChannel: make(i.MessageChan, 5),
-    Tanks: make( map[int]*Tank ),
-    Map: NewMap(config),
+    Live: NewLive( config ),
   };
+
+  return world
 }
 
 func (w *World) run () {
@@ -38,22 +39,29 @@ func (w *World) start () {
     w.processCommands()
     w.calculateWorld()
     w.sendWorldToClients()
+    w.liveTick()
   }
 }
 
-func ( w *World ) sendWorldToClients () {
-  tanks := make([]*Tank, len(w.Tanks))
+func ( w *World ) Tanks () *map[int]*Tank {
+  return &w.Live.Tanks
+}
 
-  n := 0
-  for _, tank := range w.Tanks {
+func ( w *World ) Map () *Map {
+  return w.Live.Map
+}
+
+func ( w *World ) sendWorldToClients () {
+  tanks := make([]*Tank, len(*w.Tanks()))
+
+  w.Live.EachTanks ( func ( tank *Tank, n int ) {
     tanks[n] = tank
-    n++
-  }
+  })
 
   snapShot := &i.Message{
     "Type": "World",
     "Tanks": tanks,
-    "Map": w.Map,
+    "Map": w.Map(),
   }
 
   for _, client := range w.Clients {
@@ -125,9 +133,10 @@ func ( w *World ) nextTankId () int {
 
 func ( w *World ) addNewTank ( client i.Client ) {
   id := w.nextTankId()
-  coords := w.Map.GetRandomCoords()
+  coords := w.Map().GetRandomCoords()
   tank := NewTank(id, coords)
-  w.Tanks[id] = tank
+
+  w.Live.AddTank( tank )
 
   replay := i.Message{ "Tank": tank, "Type": "Tank" }
 
@@ -136,7 +145,7 @@ func ( w *World ) addNewTank ( client i.Client ) {
 }
 
 func ( w *World ) removeTank ( tank *Tank ) {
-  delete( w.Tanks, tank.Id )
+  delete( *w.Tanks(), tank.Id )
   log.World("Tank with id = ", tank.Id, " was removed.")
 }
 
@@ -165,4 +174,8 @@ func ( w *World) removeClient ( client i.Client ) {
 
   w.Clients = append(w.Clients[:index], w.Clients[index + 1:]...)
   log.World("Client removed. Clients count = ", len( w.Clients ))
+}
+
+func ( w *World ) liveTick () {
+  w.Live.MoveTanksTick()
 }
