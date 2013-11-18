@@ -1,6 +1,6 @@
 # GoTanks
 
-Tanks game on Golang.
+Server for game "Tanks" on Golang.
 
 ## Install
 
