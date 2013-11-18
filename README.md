@@ -13,3 +13,12 @@ Server for game "Tanks" on Golang.
 ```
   GOPATH=`pwd` go run main.go
 ```
+
+## API
+
+### TCP 
+
+| DefaultPort | 9292 |
+
+### WEB
+| DefaultPort | 9000 |
