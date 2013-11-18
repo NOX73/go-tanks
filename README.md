@@ -1,11 +1,14 @@
+# GoTanks
 
-== Install ==
+Tanks game on Golang.
+
+## Install
 
 ```
   GOPATH=`pwd` go get github.com/robfig/revel
 ```
 
-== Run ==
+## Run
 
 ```
   GOPATH=`pwd` go run main.go
