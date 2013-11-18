@@ -18,7 +18,12 @@ Server for game "Tanks" on Golang.
 
 ### TCP 
 
-| DefaultPort | 9292 |
+<table>
+  <tr><td>DefaultPort</td><td>9292</td></tr>
+</table>
 
 ### WEB
-| DefaultPort | 9000 |
+
+<table>
+  <tr><td>DefaultPort</td><td>9000</td></tr>
+</table>
