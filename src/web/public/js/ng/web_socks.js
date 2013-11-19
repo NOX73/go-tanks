@@ -1,8 +1,20 @@
+var myApp = angular.module('myApp',[]);
 
-function WebSocks($scope) {
-  $scope.messages = [
-    {text: "1111111111111"},
-    {text: "2222222222222"},
-    {text: "3333333333333"}
-  ]
-}
+myApp.controller('WebSocks', ['$scope', function ($scope, $ws) {
+
+  $scope.messages = [ ]
+  var socket = new WebSocket("ws://localhost:9000/ws"); 
+
+  socket.onmessage = function ( event ) {
+    $scope.messages.push({ text: event.data })
+    $scope.$digest();
+  }
+
+  $scope.sendMessage = function () {
+    socket.send( $scope.messageText );
+    $scope.messageText = '';
+  }
+
+
+
+}])

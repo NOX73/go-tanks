@@ -3,10 +3,13 @@
 
 {{template "navbar.html" .}}
 
-
-<div class="container" ng-app>
+<div class="container" ng-app="myApp">
 
   <div class="jumbotron" ng-controller="WebSocks">
+    <form ng-submit="sendMessage()">
+      <input type="text" ng-model="messageText"  size="30" >
+      <input class="btn-primary" type="submit" value="Send">
+    </form>
     <ul>
       <li ng-repeat="message in messages">
         <span>{{ ng "message.text" }}</span>
