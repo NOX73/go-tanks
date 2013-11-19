@@ -1,5 +1,15 @@
-  {{if eq .RunMode "dev"}}
+  {{if eq .RunMode "dev2"}}
     {{template "debug.html" .}}
   {{end}}
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
+
+    {{append . "moreScripts" "ng/web_socks.js"}}
+    {{range .moreScripts}}
+      <script src="/public/js/{{.}}" type="text/javascript" charset="utf-8"></script>
+    {{end}}
+
   </body>
 </html>

@@ -16,4 +16,5 @@ func init() {
 		revel.InterceptorFilter,       // Run interceptors around the action.
 		revel.ActionInvoker,           // Invoke the action.
 	}
+  revel.TemplateFuncs["ng"] = func( a interface{}) string { return  "{{" + a.(string) + "}}" }
 }

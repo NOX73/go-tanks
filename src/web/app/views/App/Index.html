@@ -1,23 +1,28 @@
 {{set . "title" "Home"}}
 {{template "header.html" .}}
 
-<header class="hero-unit" style="background-color:#A9F16C">
-  <div class="container">
-    <div class="row">
-      <div class="hero-text">
-        <h1>It works!</h1>
-        <p></p>
-      </div>
-    </div>
-  </div>
-</header>
+{{template "navbar.html" .}}
 
-<div class="container">
-  <div class="row">
-    <div class="span6">
-      {{template "flash.html" .}}
-    </div>
+
+<div class="container" ng-app>
+
+  <div class="jumbotron" ng-controller="WebSocks">
+    <ul>
+      <li ng-repeat="message in messages">
+        <span>{{ ng "message.text" }}</span>
+      </li>
+    </ul>
   </div>
-</div>
+
+  <div class="jumbotron">
+    <h1>Navbar example</h1>
+    <p>This example is a quick exercise to illustrate how the default, static and fixed to top navbar work. It includes the responsive CSS and HTML, so it also adapts to your viewport and device.</p>
+    <p>To see the difference between static and fixed top navbars, just scroll.</p>
+    <p>
+      <a class="btn btn-lg btn-primary" href="../../components/#navbar" role="button">View navbar docs &raquo;</a>
+    </p>
+  </div>
+
+</div> <!-- /container -->
 
 {{template "footer.html" .}}
