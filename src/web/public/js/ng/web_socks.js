@@ -15,6 +15,4 @@ myApp.controller('WebSocks', ['$scope', function ($scope, $ws) {
     $scope.messageText = '';
   }
 
-
-
 }])
