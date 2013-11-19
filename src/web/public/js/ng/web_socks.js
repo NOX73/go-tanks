@@ -7,6 +7,7 @@ myApp.controller('WebSocks', ['$scope', function ($scope, $ws) {
 
   socket.onmessage = function ( event ) {
     $scope.messages.push({ text: event.data })
+    if( $scope.messages.length > 5 ){ $scope.messages.shift() }
     $scope.$digest();
   }
 

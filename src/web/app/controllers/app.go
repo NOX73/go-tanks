@@ -17,12 +17,12 @@ func (c App) Ws(ws *websocket.Conn) revel.Result {
   defer ws.Close()
 
   ws.Write([]byte("Hello"))
-  msg := make([]byte, 255)
+  buff := make([]byte, 255)
 
   for {
-    _, err := ws.Read(msg)
+    n, err := ws.Read(buff)
     if err != nil { break }
-    ws.Write(msg)
+    ws.Write(buff[0:n])
   }
 
   return nil
