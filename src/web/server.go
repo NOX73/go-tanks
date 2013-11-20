@@ -26,13 +26,18 @@ func viewPath ( filename string ) string {
 
 func publicDir () http.Dir {
   return http.Dir(path.Join( webPath(), "public" ))
+  //return http.Dir("/tmp")
 }
 
 func ( s *Server ) Run () {
   s.parseTemplates()
+
+  // Root path
   http.HandleFunc("/", s.handler)
-  static := http.FileServer(publicDir())
-  http.HandleFunc("/public", static.ServeHTTP)
+
+  // Static files
+  http.Handle( "/public/", http.StripPrefix("/public", http.FileServer(publicDir())) )
+
   http.ListenAndServe(":9000", nil)
 }
 
