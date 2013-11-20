@@ -1,7 +1,7 @@
 package main
 
 import (
-  "./go_tanks"
+  "./src/go_tanks"
   "math/rand"
   "time"
   "github.com/robfig/revel"
@@ -28,3 +28,4 @@ func runGoTanks () {
   server := go_tanks.NewServer( config )
   server.Run();
 }
+

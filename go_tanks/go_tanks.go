@@ -1,2 +1,0 @@
-package go_tanks
-

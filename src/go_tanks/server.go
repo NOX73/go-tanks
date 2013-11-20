@@ -23,7 +23,7 @@ func (srv *Server) Run () {
 
 func (srv *Server) run () {
   tcpServer := TCPServer { Port: srv.config.Port, Address: srv.config.Address }
-  channel := make(chan *Client)
+  channel := ClientChannel
 
   go tcpServer.run( channel )
 

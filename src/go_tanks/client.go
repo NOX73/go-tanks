@@ -1,6 +1,7 @@
 package go_tanks
 
 import (
+  "code.google.com/p/go.net/websocket"
   "net"
   "encoding/json"
   i "./interfaces"
@@ -50,6 +51,10 @@ func NewClient ( conn net.Conn ) ( *Client ) {
   }
   client.Init()
   return client
+}
+
+func NewWsClient ( ws *websocket.Conn ) ( *Client ) {
+  return NewClient( ws )
 }
 
 func ( c *Client ) Init () {
