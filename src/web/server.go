@@ -4,6 +4,8 @@ import (
   "net/http"
   "log"
   "html/template"
+  "go/build"
+  "path"
 )
 
 type Server struct {
@@ -14,12 +16,16 @@ func NewServer () *Server {
   return &Server{ templates: make(map[string]*template.Template)}
 }
 
+func webPath () string {
+  return path.Join( build.Default.GOPATH, "src/web" )
+}
+
 func viewPath ( filename string ) string {
-  return  "/Users/nox73/Dropbox/proj/go-tanks/src/web/app/views/" + filename
+  return  path.Join( webPath(), "app/views", filename )
 }
 
 func publicDir () http.Dir {
-  return http.Dir("/Users/nox73/Dropbox/proj/go-tanks/src/web/app/public/")
+  return http.Dir(path.Join( webPath(), "public" ))
 }
 
 func ( s *Server ) Run () {
