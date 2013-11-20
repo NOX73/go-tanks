@@ -1,7 +1,6 @@
 package controllers
 
 import ( 
-  "github.com/robfig/revel"
   "code.google.com/p/go.net/websocket"
 )
 

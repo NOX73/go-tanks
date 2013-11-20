@@ -4,8 +4,11 @@ import (
   "./src/go_tanks"
   "math/rand"
   "time"
-  "github.com/robfig/revel"
-  "github.com/robfig/revel/harness"
+	//"reflect"
+  //"github.com/robfig/revel"
+  //"github.com/robfig/revel/harness"
+  "./src/web"
+  //"code.google.com/p/go.net/websocket"
 )
 
 func main() {
@@ -14,11 +17,8 @@ func main() {
 }
 
 func runWeb () {
-  revel.Init("dev", "web", "")
-  revel.LoadMimeConfig()
-
-  app, _ := harness.Build()
-  app.Cmd().Run()
+  server := web.NewServer()
+  server.Run()
 }
 
 func runGoTanks () {
@@ -28,4 +28,3 @@ func runGoTanks () {
   server := go_tanks.NewServer( config )
   server.Run();
 }
-
