@@ -6,6 +6,7 @@ import (
   "html/template"
   "go/build"
   "path"
+  "code.google.com/p/go.net/websocket"
 )
 
 type Server struct {
@@ -38,12 +39,29 @@ func ( s *Server ) Run () {
   // Static files
   http.Handle( "/public/", http.StripPrefix("/public", http.FileServer(publicDir())) )
 
+  // WebSocket
+  http.Handle("/ws", websocket.Handler(s.websocket))
+
   http.ListenAndServe(":9000", nil)
 }
 
 func ( s *Server ) handler ( w http.ResponseWriter, r *http.Request ) {
   err := s.templates["layout"].ExecuteTemplate(w, "index.html", s)
   if err != nil { log.Fatal(err) }
+}
+
+func ( s *Server ) websocket ( ws *websocket.Conn) {
+  defer ws.Close()
+
+  ws.Write([]byte("Hello"))
+  buff := make([]byte, 255)
+
+  for {
+    n, err := ws.Read(buff)
+    if err != nil { break }
+    ws.Write(buff[0:n])
+  }
+
 }
 
 func ( s *Server ) parseTemplates () {
