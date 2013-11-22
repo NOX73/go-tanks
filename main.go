@@ -4,11 +4,7 @@ import (
   "./src/go_tanks"
   "math/rand"
   "time"
-	//"reflect"
-  //"github.com/robfig/revel"
-  //"github.com/robfig/revel/harness"
   "./src/web"
-  //"code.google.com/p/go.net/websocket"
 )
 
 func main() {
@@ -17,7 +13,7 @@ func main() {
 }
 
 func runWeb () {
-  server := web.NewServer()
+  server := web.NewServer( go_tanks.NewGoTanksWsClient )
   server.Run()
 }
 

@@ -1,11 +1,9 @@
 package go_tanks
 
 import (
-  "code.google.com/p/go.net/websocket"
+  "github.com/gorilla/websocket"
   "net"
-  "encoding/json"
   i "./interfaces"
-  "bufio"
   "errors"
   log "./log"
 )
@@ -13,7 +11,6 @@ import (
 const (
   NON_AUTHORIZED = iota
   AUTHORIZED
-  EOL = "\n"
 )
 
 const (
@@ -23,15 +20,14 @@ const (
 )
 
 type Client struct {
-  Connection  net.Conn
+  Connection  IConn
   State       int
-  Reader      *bufio.Reader
   login       string
   password    string
   Tank        *Tank
   outBox      i.MessageChan
   inBox       i.MessageChan
-  jsonBox     chan *[]byte
+  messageBox  i.MessageChan
   worldRecieveDisabled bool
 }
 
@@ -39,14 +35,13 @@ func ( c *Client )  RemoteAddr () ( net.Addr ) {
   return c.Connection.RemoteAddr()
 }
 
-func NewClient ( conn net.Conn ) ( *Client ) {
+func NewClient ( conn IConn ) ( *Client ) {
   client := &Client{
     Connection: conn,
     State: NON_AUTHORIZED,
-    Reader: bufio.NewReader(conn),
     inBox: make( i.MessageChan, INBOX_CAPACITY ),
     outBox: make( i.MessageChan, OUTBOX_CAPACITY ),
-    jsonBox: make( chan *[]byte, CLIENT_BUFFER_CAPACITY ),
+    messageBox: make( i.MessageChan, CLIENT_BUFFER_CAPACITY ),
     worldRecieveDisabled: false,
   }
   client.Init()
@@ -54,11 +49,15 @@ func NewClient ( conn net.Conn ) ( *Client ) {
 }
 
 func NewWsClient ( ws *websocket.Conn ) ( *Client ) {
-  return NewClient( ws )
+  return NewClient( NewWsConn(ws) )
+}
+
+func NewNetClient ( conn *net.Conn ) ( *Client ) {
+  return NewClient( NewNetConn(conn) )
 }
 
 func ( c *Client ) Init () {
-  go c.startSendJsonLoop()
+  go c.startSendMessageLoop()
 }
 
 func ( c *Client ) Close () {
@@ -66,62 +65,22 @@ func ( c *Client ) Close () {
 }
 
 func ( c *Client ) SendMessage ( m *i.Message ) error {
-  jsonStr, err := json.Marshal( m )
-  if( err != nil ){ return err }
-
-  err = c.sendJson( &jsonStr )
-  if(err != nil) {
-    log.Client(err)
-    return err 
-  }
-
-  return nil
-}
-
-func ( c *Client ) sendJson ( json *[]byte ) error {
-
   select {
-    case c.jsonBox <- json:
-      return nil
-    default:
-      return errors.New("Slow client.")
+  case c.messageBox <- m:
+    return nil
+  default:
+    return errors.New("Slow client.")
   }
-
-  return nil
 }
 
-func ( c *Client ) startSendJsonLoop () {
-  for jsonStr := range c.jsonBox {
-    c.Connection.Write( *jsonStr )
-    c.Connection.Write( []byte(EOL) )
+func ( c *Client ) startSendMessageLoop () {
+  for message := range c.messageBox {
+    c.Connection.WriteMessage( message )
   }
 }
 
 func ( c *Client ) ReadMessage () ( *i.Message, error ) {
-  buffer := []byte(nil)
-
-  for {
-    part, prefix, err := c.Reader.ReadLine()
-    if err != nil { return nil, err }
-
-    if len(part) == 0 { continue }
-
-    buffer = append( buffer, part... )
-
-    for prefix && err == nil {
-      part, prefix, err = c.Reader.ReadLine()
-      if err != nil { return nil, err }
-      buffer = append( buffer, part... )
-    }
-
-    break
-  }
-
-  message := i.Message{}
-  err := json.Unmarshal(buffer, &message)
-  if( err != nil) { return nil, err }
-
-  return &message, nil
+  return c.Connection.ReadMessage()
 }
 
 func ( c *Client ) SetAuthCredentials ( login, password string ) {

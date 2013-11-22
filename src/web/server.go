@@ -6,15 +6,16 @@ import (
   "html/template"
   "go/build"
   "path"
-  "code.google.com/p/go.net/websocket"
+  "github.com/gorilla/websocket"
 )
 
 type Server struct {
-  templates     map[string]*template.Template
+  templates   map[string]*template.Template
+  wsHandler   func(*websocket.Conn)
 }
 
-func NewServer () *Server {
-  return &Server{ templates: make(map[string]*template.Template)}
+func NewServer ( wsHandler func(*websocket.Conn) ) *Server {
+  return &Server{ templates: make(map[string]*template.Template), wsHandler: wsHandler }
 }
 
 func webPath () string {
@@ -27,7 +28,6 @@ func viewPath ( filename string ) string {
 
 func publicDir () http.Dir {
   return http.Dir(path.Join( webPath(), "public" ))
-  //return http.Dir("/tmp")
 }
 
 func ( s *Server ) Run () {
@@ -40,7 +40,7 @@ func ( s *Server ) Run () {
   http.Handle( "/public/", http.StripPrefix("/public", http.FileServer(publicDir())) )
 
   // WebSocket
-  http.Handle("/ws", websocket.Handler(s.websocket))
+  http.HandleFunc("/ws", s.websocket)
 
   http.ListenAndServe(":9000", nil)
 }
@@ -50,18 +50,10 @@ func ( s *Server ) handler ( w http.ResponseWriter, r *http.Request ) {
   if err != nil { log.Fatal(err) }
 }
 
-func ( s *Server ) websocket ( ws *websocket.Conn) {
-  defer ws.Close()
+func ( s *Server ) websocket ( w http.ResponseWriter, r *http.Request ) {
+  ws, _ := websocket.Upgrade(w, r, nil, 1024, 1024)
 
-  ws.Write([]byte("Hello"))
-  buff := make([]byte, 255)
-
-  for {
-    n, err := ws.Read(buff)
-    if err != nil { break }
-    ws.Write(buff[0:n])
-  }
-
+  s.wsHandler(ws)
 }
 
 func ( s *Server ) parseTemplates () {

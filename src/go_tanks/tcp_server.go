@@ -27,6 +27,6 @@ func (srv *TCPServer) run (channel chan<- *Client) {
   for {
     conn, err := listener.Accept()
     if (err != nil ) { log.Fatal( err ) }
-    channel <- NewClient(conn)
+    channel <- NewNetClient(&conn)
   }
 }

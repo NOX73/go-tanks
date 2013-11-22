@@ -1,11 +1,11 @@
 package go_tanks
 
 import (
-  "code.google.com/p/go.net/websocket"
+  "github.com/gorilla/websocket"
 )
 
 var ClientChannel = make(chan *Client)
 
 func NewGoTanksWsClient ( ws *websocket.Conn ) {
-  NewWsClient( ws )
+  ClientChannel <- NewWsClient( ws )
 }
