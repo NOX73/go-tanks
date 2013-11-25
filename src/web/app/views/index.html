@@ -2,26 +2,21 @@
 
 {{template "navbar.html" .}}
 
-<div class="container" ng-app>
-  <div class="jumbotron" ng-controller="WebSocks">
+<div class="container" ng-app ng-controller="WebSocks">
+  <div class="jumbotron" >
     {{template "tabs.html" .}}
     {{template "auth_form.html" .}}
     {{template "message_form.html" .}}
     {{template "session_form.html" .}}
     <ul>
       <li ng-repeat="message in messages">
-        <span>{{ ng "message.text" }}</span>
+      <span>{{ ng "message.text" }}</span>
       </li>
     </ul>
   </div>
-
-  <div class="jumbotron">
-    <h1>Navbar example</h1>
-    <p>This example is a quick exercise to illustrate how the default, static and fixed to top navbar work. It includes the responsive CSS and HTML, so it also adapts to your viewport and device.</p>
-    <p>To see the difference between static and fixed top navbars, just scroll.</p>
-    <p>
-      <a class="btn btn-lg btn-primary" href="../../components/#navbar" role="button">View navbar docs &raquo;</a>
-    </p>
+  <div class="jumbotron" ng-controller="GameMap" >
+    <canvas id="gameMap" width="500" height="300">
+    </canvas>
   </div>
 
 </div> <!-- /container -->
