@@ -2,13 +2,12 @@
 
 {{template "navbar.html" .}}
 
-<div class="container" ng-app="myApp">
-
+<div class="container" ng-app>
   <div class="jumbotron" ng-controller="WebSocks">
-    <form ng-submit="sendMessage()">
-      <input type="text" ng-model="messageText"  size="30" >
-      <input class="btn-primary" type="submit" value="Send">
-    </form>
+    {{template "tabs.html" .}}
+    {{template "auth_form.html" .}}
+    {{template "message_form.html" .}}
+    {{template "session_form.html" .}}
     <ul>
       <li ng-repeat="message in messages">
         <span>{{ ng "message.text" }}</span>
