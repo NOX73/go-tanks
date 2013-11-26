@@ -7,6 +7,8 @@ import (
   "go/build"
   "path"
   "github.com/gorilla/websocket"
+  "github.com/howeyc/fsnotify"
+  "time"
 )
 
 type Server struct {
@@ -32,6 +34,8 @@ func publicDir () http.Dir {
 
 func ( s *Server ) Run () {
   s.parseTemplates()
+
+  go s.watchForTemplates()
 
   // Root path
   http.HandleFunc("/", s.handler)
@@ -68,4 +72,26 @@ func ( s *Server ) parseTemplates () {
 
   s.templates["layout"] = t
 
+}
+
+func ( s *Server ) watchForTemplates () {
+  watcher, err := fsnotify.NewWatcher()
+  if err != nil { log.Fatal(err) }
+
+  defer watcher.Close()
+
+  err = watcher.Watch(viewPath(""))
+  if err != nil { log.Fatal(err) }
+
+  for {
+    <- watcher.Event
+
+    select {
+      case <- watcher.Event:;
+      case <- time.After(time.Second):;
+    }
+
+    log.Println("Parse Template trigered ... ")
+    s.parseTemplates()
+  }
 }
