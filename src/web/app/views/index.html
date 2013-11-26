@@ -3,20 +3,40 @@
 {{template "navbar.html" .}}
 
 <div class="container" ng-app ng-controller="WebSocks">
-  <div class="jumbotron" >
-    {{template "tabs.html" .}}
-    {{template "auth_form.html" .}}
-    {{template "message_form.html" .}}
-    {{template "session_form.html" .}}
-    <ul>
-      <li ng-repeat="message in messages">
-      <span>{{ ng "message.text" }}</span>
-      </li>
-    </ul>
-  </div>
+  <div class="well" >
+
+    <div class="row">
+
+      <div class="col-md-8">
+        {{template "tabs.html" .}}
+        <p></p>
+        {{template "auth_form.html" .}}
+        {{template "control_form.html" .}}
+        {{template "message_form.html" .}}
+        {{template "session_form.html" .}}
+      </div>
+
+      <div class="col-md-4">
+
+        <h5>Messages: </h5>
+
+        <ul>
+          <li ng-repeat="message in messages">
+          <span>{{ ng "message.text" }}</span>
+          </li>
+        </ul>
+
+      </div>
+
+    </div><!-- /row -->
+
+
+
+  </div><!-- /well -->
+
+
   <div class="jumbotron" ng-controller="GameMap" >
-    <canvas id="gameMap" width="500" height="300">
-    </canvas>
+    <canvas id="gameMap" width="1024" height="768"></canvas>
   </div>
 
 </div> <!-- /container -->

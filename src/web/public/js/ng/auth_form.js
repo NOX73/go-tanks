@@ -10,7 +10,9 @@ function AuthForm($scope) {
     localStorage.login = $scope.login
     localStorage.password = $scope.password
 
-    $scope.sendMessage( JSON.stringify({ Type:"Auth", Login: $scope.login, Password: $scope.password }) )
+    $scope.sendMessage( { Type:"Auth", Login: $scope.login, Password: $scope.password } )
+
+    $scope.$emit('auth:success')
   }
 
   if($scope.login != '' && $scope.password != ''){ setTimeout( $scope.sendAuth, 1000 ) }

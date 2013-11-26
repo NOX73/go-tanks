@@ -1,4 +1,5 @@
-<form ng-submit="resetSession()" ng-show="isSession()">
-  <input class="btn-primary" type="submit" value="Reconnect">
+<form ng-submit="resetSession()" ng-show="isSession()" role="form" class="form-inline">
+  <input class="btn btn-default" type="submit" value="Reconnect">
+  <input class="btn btn-primary" type="button" value="Close" ng-click="closeSession()">
 </form>
 

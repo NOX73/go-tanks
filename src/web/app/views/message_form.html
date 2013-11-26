@@ -1,5 +1,7 @@
-<form ng-submit="sendMessage()" ng-show="isMessage()">
-  <input type="text" ng-model="messageText"  size="30" >
-  <input class="btn-primary" type="submit" value="Send">
+<form ng-submit="sendMessage()" ng-show="isMessage()" role="form" class="form-inline">
+  <div class="form-group">
+    <input type="text" ng-model="messageText" class="form-control">
+  </div>
+  <input class="btn btn-primary" type="submit" value="Send">
 </form>
 

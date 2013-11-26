@@ -13,8 +13,8 @@ func ValidateTankCommandMessage ( m *i.Message  ) error {
     val, ok := message["LeftMotor"].(float64)
     if !ok { return errors.New("LeftMotor paramentr should be float.") }
 
-    if val < 0 || val > 1 {
-      return errors.New("LeftMotor paramentr should be in [0..1]")
+    if val < -1 || val > 1 {
+      return errors.New("LeftMotor paramentr should be in [-1..1]")
     }
   }
 
@@ -22,8 +22,8 @@ func ValidateTankCommandMessage ( m *i.Message  ) error {
     val, ok := message["RightMotor"].(float64)
     if !ok { return errors.New("RightMotor paramentr should be float.") }
 
-    if val < 0 || val > 1 {
-      return errors.New("RightMotor paramentr should be in [0..1]")
+    if val < -1 || val > 1 {
+      return errors.New("RightMotor paramentr should be in [-1..1]")
     }
   }
 
