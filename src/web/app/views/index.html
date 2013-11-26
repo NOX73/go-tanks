@@ -2,7 +2,7 @@
 
 {{template "navbar.html" .}}
 
-<div class="container" ng-app ng-controller="WebSocks">
+<div class="container" ng-app="app" ng-controller="WebSocks">
   <div class="well" >
 
     <div class="row">
@@ -36,6 +36,9 @@
 
 
   <div class="jumbotron" ng-controller="GameMap" >
+
+    <textarea ui-keypress="{'enter':'keypressCallback($event)'}" ui-event="{ blur : 'blurCallback()' }"></textarea>
+
     <canvas id="gameMap" width="1024" height="768"></canvas>
   </div>
 

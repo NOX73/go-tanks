@@ -1,4 +1,4 @@
-function GameMap ( $scope ) {
+angular.module('app').controller('GameMap', function ( $scope ) {
 
   var stage = new createjs.Stage("gameMap");
   var tanks = {}
@@ -35,4 +35,11 @@ function GameMap ( $scope ) {
     stage.update()
   })
 
-}
+  $scope.keypressCallback = function ($event) {
+    console.log("pressed")
+  }
+  $scope.blurCallback = function () {
+    console.log("blur")
+  }
+
+});

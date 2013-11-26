@@ -1,10 +1,10 @@
-function WebSocks($scope) {
+angular.module('app').controller('WebSocks', function ( $scope ) {
 
   $scope.state = 'auth'
   $scope.messages = [ ]
   var socket;
 
-  function initSocket () {
+  $scope.initSocket = function () {
     socket = new WebSocket("ws://localhost:9000/ws"); 
 
     socket.onmessage = function ( event ) {
@@ -22,11 +22,11 @@ function WebSocks($scope) {
     }
   }
 
-  function closeSocket () {
+  $scope.closeSocket = function () {
     if( socket.readyState == 1 ){ socket.close(); }
   }
 
-  initSocket()
+  $scope.initSocket()
 
   $scope.sendMessage = function ( message ) {
     if( !message ) { message = $scope.messageText } else { message = JSON.stringify( message ) }
@@ -45,17 +45,5 @@ function WebSocks($scope) {
   $scope.setSession = function () { $scope.state = 'session' }
   $scope.setControl = function () { $scope.state = 'control' }
 
-  $scope.$on('hello', function(){ $scope.state = "hello"; $scope.$digest() })
-
-  $scope.resetSession = function () {
-    $scope.closeSession()
-    initSocket()
-    $scope.messages.length = 0
-  }
-
-  $scope.closeSession = function () {
-    closeSocket();
-  }
-
   $scope.$on('auth:success', $scope.setControl )
-}
+});

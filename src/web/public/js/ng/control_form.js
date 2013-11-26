@@ -1,4 +1,4 @@
-function ControlForm( $scope ) {
+angular.module('app').controller('ControlForm', function ( $scope ) {
   $scope.LeftMotor = 0
   $scope.RightMotor = 0
 
@@ -18,4 +18,4 @@ function ControlForm( $scope ) {
 
     $scope.apply()
   }
-}
+});

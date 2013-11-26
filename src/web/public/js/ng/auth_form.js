@@ -1,4 +1,4 @@
-function AuthForm($scope) {
+angular.module('app').controller('AuthForm', function ( $scope ) {
 
   $scope.login = ''
   $scope.password = ''
@@ -17,4 +17,4 @@ function AuthForm($scope) {
 
   if($scope.login != '' && $scope.password != ''){ setTimeout( $scope.sendAuth, 1000 ) }
 
-}
+});
