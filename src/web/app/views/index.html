@@ -36,10 +36,7 @@
 
 
   <div class="jumbotron" ng-controller="GameMap" >
-
-    <textarea ui-keypress="{'enter':'keypressCallback($event)'}" ui-event="{ blur : 'blurCallback()' }"></textarea>
-
-    <canvas id="gameMap" width="1024" height="768"></canvas>
+    <canvas id="gameMap" tabindex="0" ui-keydown="{ 37: 'pressLeft($event)', 38: 'pressUp($event)', 39: 'pressRight($event)', 40: 'pressDown($event)' }" width="1024" height="768" ></canvas>
   </div>
 
 </div> <!-- /container -->

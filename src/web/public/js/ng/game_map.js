@@ -35,11 +35,19 @@ angular.module('app').controller('GameMap', function ( $scope ) {
     stage.update()
   })
 
-  $scope.keypressCallback = function ($event) {
-    console.log("pressed")
-  }
-  $scope.blurCallback = function () {
-    console.log("blur")
+  $scope.pressLeft = function ($event) {
+    $event.preventDefault();
   }
 
+  $scope.pressUp = function ($event) {
+    $event.preventDefault();
+  }
+
+  $scope.pressRight = function ($event) {
+    $event.preventDefault();
+  }
+
+  $scope.pressDown = function ($event) {
+    $event.preventDefault();
+  }
 });
