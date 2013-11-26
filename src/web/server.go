@@ -86,12 +86,13 @@ func ( s *Server ) watchForTemplates () {
   for {
     <- watcher.Event
 
-    select {
-      case <- watcher.Event:;
+    wait: select {
+      case <- watcher.Event:
+        goto wait;
       case <- time.After(time.Second):;
     }
 
-    log.Println("Parse Template trigered ... ")
+    log.Println("Parse Template triggered ... ")
     s.parseTemplates()
   }
 }
