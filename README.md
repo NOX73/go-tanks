@@ -4,9 +4,7 @@ Server for game "Tanks" on Golang.
 
 ## Install
 
-```
-  GOPATH=`pwd` go get github.com/robfig/revel
-```
+Just git clone.
 
 ## Run
 
