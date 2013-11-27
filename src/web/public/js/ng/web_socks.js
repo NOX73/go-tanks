@@ -35,6 +35,11 @@ angular.module('app').controller('WebSocks', function ( $scope ) {
     $scope.messageText = '';
   }
 
+  $scope.sendTankCommand = function ( command ) {
+    command.Type = "TankCommand"
+    $scope.sendMessage(command)
+  }
+
   $scope.isAuth = function () { return $scope.state == 'auth' }
   $scope.isMessage = function () { return $scope.state == 'message' }
   $scope.isSession = function () { return $scope.state == 'session' }

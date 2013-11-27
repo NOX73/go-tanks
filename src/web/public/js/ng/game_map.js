@@ -1,4 +1,4 @@
-angular.module('app').controller('GameMap', function ( $scope ) {
+angular.module('app').controller('GameMap', ['$scope', '$tank', function ( $scope, $tank ) {
 
   var stage = new createjs.Stage("gameMap");
   var tanks = {}
@@ -36,18 +36,34 @@ angular.module('app').controller('GameMap', function ( $scope ) {
   })
 
   $scope.pressLeft = function ($event) {
+    $tank.LeftMotor = 0.4
+    $tank.RightMotor = 0.5
+    $scope.sendTankCommand({ LeftMotor: $tank.LeftMotor, RightMotor: $tank.RightMotor })
+
     $event.preventDefault();
   }
 
   $scope.pressUp = function ($event) {
+    $tank.LeftMotor = 1
+    $tank.RightMotor = 1
+    $scope.sendTankCommand({ LeftMotor: $tank.LeftMotor, RightMotor: $tank.RightMotor })
+
     $event.preventDefault();
   }
 
   $scope.pressRight = function ($event) {
+    $tank.LeftMotor = 0.5
+    $tank.RightMotor = 0.4
+    $scope.sendTankCommand({ LeftMotor: $tank.LeftMotor, RightMotor: $tank.RightMotor })
+
     $event.preventDefault();
   }
 
   $scope.pressDown = function ($event) {
+    $tank.LeftMotor = 0
+    $tank.RightMotor = 0
+    $scope.sendTankCommand({ LeftMotor: $tank.LeftMotor, RightMotor: $tank.RightMotor })
+
     $event.preventDefault();
   }
-});
+}]);
