@@ -23,20 +23,25 @@ func NewTank ( id int, coords *Coords ) *Tank {
   return &tank
 }
 
-func ( t *Tank ) Move ( speed int ) {
+func ( t *Tank ) CalculateMove ( speed int ) (*Coords, float64) {
 
   sumMotor := math.Min( t.LeftMotor , t.RightMotor )
 
   radDirection := (math.Pi * t.Direction) / 180
-  t.Coords.X += int( math.Cos( radDirection ) * float64(speed) * sumMotor )
-  t.Coords.Y += int( math.Sin( radDirection ) * float64(speed) * sumMotor )
+  x := t.Coords.X + int( math.Cos( radDirection ) * float64(speed) * sumMotor )
+  y := t.Coords.Y + int( math.Sin( radDirection ) * float64(speed) * sumMotor )
 
   rotationSpeed := t.LeftMotor - t.RightMotor
 
-  t.Direction += rotationSpeed * float64(speed)
+  direction := t.Direction + rotationSpeed * float64(speed)
 
-  if t.Direction < 0 { t.Direction += 360 }
-  if t.Direction > 360 { t.Direction -= 360 }
+  if direction < 0 { direction += 360 }
+  if direction > 360 { direction -= 360 }
 
+  return &Coords{X: x, Y: y}, direction 
 }
 
+func ( t *Tank ) ApplyMove ( c *Coords, d float64 ) {
+  t.Coords = c
+  t.Direction = d
+}

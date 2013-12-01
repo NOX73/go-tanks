@@ -17,7 +17,12 @@ func NewLive ( config *Config ) *Live {
 func ( l *Live ) MoveTanksTick () {
 
   l.EachTanks ( func ( tank *Tank, _ int ) {
-    tank.Move( l.TickSpeed )
+    coords, direction := tank.CalculateMove( l.TickSpeed )
+
+    if( coords.X < 0 || coords.X > l.Map.Width ) { coords.X = tank.Coords.X }
+    if( coords.Y < 0 || coords.Y > l.Map.Height ) { coords.Y = tank.Coords.Y }
+
+    tank.ApplyMove( coords, direction )
   })
 
 }
