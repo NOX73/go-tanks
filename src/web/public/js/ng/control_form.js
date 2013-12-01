@@ -20,4 +20,8 @@ angular.module('app').controller('ControlForm', ['$scope', '$tank', function ( $
 
     $scope.apply()
   }
+
+  $scope.fire = function () {
+    $scope.sendTankCommand({ Fire: true })
+  }
 }]);

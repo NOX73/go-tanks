@@ -62,6 +62,7 @@ func ( w *World ) sendWorldToClients () {
     "Type": "World",
     "Tanks": tanks,
     "Map": w.Map(),
+    "Bullets": w.Live.Bullets,
   }
 
   for _, client := range w.Clients {
@@ -119,6 +120,7 @@ func ( w *World ) processTankCommand ( m *i.Message, client i.Client ) {
 
   if message["LeftMotor"] != nil { tank.LeftMotor = message["LeftMotor"].(float64)  }
   if message["RightMotor"] != nil { tank.RightMotor = message["RightMotor"].(float64)  }
+  if message["Fire"] != nil { w.fireTank(tank) }
 }
 
 func ( w *World ) NewTank ( client i.Client ) {
@@ -178,4 +180,10 @@ func ( w *World) removeClient ( client i.Client ) {
 
 func ( w *World ) liveTick () {
   w.Live.MoveTanksTick()
+  w.Live.MoveBulletsTick()
+}
+
+func ( w *World ) fireTank ( tank *Tank ) {
+  bullet := tank.Fire()
+  w.Live.Bullets = append(w.Live.Bullets, bullet)
 }

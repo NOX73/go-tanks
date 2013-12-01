@@ -4,6 +4,7 @@ type Live struct {
   Tanks       map[int]*Tank
   Map         *Map
   TickSpeed   int
+  Bullets     []*Bullet
 }
 
 func NewLive ( config *Config ) *Live {
@@ -11,6 +12,7 @@ func NewLive ( config *Config ) *Live {
     Tanks: make(map[int]*Tank),
     Map: NewMap( config ),
     TickSpeed: config.TickSpeed,
+    Bullets: make([]*Bullet, 0, 30),
   }
 }
 
@@ -25,6 +27,18 @@ func ( l *Live ) MoveTanksTick () {
     tank.ApplyMove( coords, direction )
   })
 
+}
+
+func ( l *Live ) MoveBulletsTick () {
+  l.EachBUllets ( func ( b *Bullet, _ int ) {
+    coords, direction := b.CalculateMove( l.TickSpeed )
+    b.ApplyMove( coords, direction )
+  })
+}
+
+func ( l *Live ) EachBUllets ( f func( *Bullet, int ) ) {
+  var i int
+  for _, b := range l.Bullets { f(b, i); i++ }
 }
 
 func ( l *Live ) EachTanks ( f func( *Tank, int ) ) {
