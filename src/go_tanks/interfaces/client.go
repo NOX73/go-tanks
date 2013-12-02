@@ -31,6 +31,8 @@ type Client interface {
   ReadOutBox () *Message
   WriteOutBox ( *Message )
 
+  OutBoxHasPlace () bool
+
   SendWorld ( *Message )
   SetWorldRecieveDisabled( bool )
 }

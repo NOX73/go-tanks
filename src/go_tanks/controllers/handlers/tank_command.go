@@ -6,7 +6,12 @@ import (
 )
 
 func TankCommandMessageHandler( w i.World, c i.Client, m *i.Message ) error {
-  c.WriteOutBox( m )
+
+  if c.OutBoxHasPlace() {
+    c.WriteOutBox( m )
+  } else {
+    c.SendMessage( i.ErrorMessage( "You are sending messages too fast." ) )
+  }
 
   return nil
 }

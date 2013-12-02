@@ -142,3 +142,7 @@ func ( c *Client ) SendWorld ( m *i.Message ) {
 func ( c *Client ) SetWorldRecieveDisabled ( val bool ) {
   c.worldRecieveDisabled = val
 }
+
+func ( c *Client ) OutBoxHasPlace () bool {
+  return cap(c.outBox) - len(c.outBox) > 0
+}
