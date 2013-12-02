@@ -32,8 +32,26 @@ func ( l *Live ) MoveTanksTick () {
 func ( l *Live ) MoveBulletsTick () {
   l.EachBUllets ( func ( b *Bullet, _ int ) {
     coords, direction := b.CalculateMove( l.TickSpeed )
-    b.ApplyMove( coords, direction )
+
+    if( coords.X < 0 || coords.X > l.Map.Width || coords.Y < 0 || coords.Y > l.Map.Height ) {
+      l.removeBullet( b )
+    } else {
+      b.ApplyMove( coords, direction )
+    }
+
   })
+}
+
+func ( l *Live ) removeBullet ( bullet *Bullet ) {
+  var i int
+  var f bool
+  var b *Bullet
+
+  for i, b = range l.Bullets {
+    if b == bullet { f = true; break }
+  }
+
+  if ( f ) { l.Bullets = append( l.Bullets[:i], l.Bullets[i+1:]... ) }
 }
 
 func ( l *Live ) EachBUllets ( f func( *Bullet, int ) ) {
