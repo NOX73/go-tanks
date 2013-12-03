@@ -21,22 +21,22 @@ func NewTank ( id int, coords *Coords ) *Tank {
     LeftMotor: 0,
     RightMotor: 0,
     Direction: 0,
-    Gun: &Gun{ Direction: 0, MoveToDirection: 0 },
+    Gun: &Gun{ Direction: 0, TurnAngle: 0 },
   }
   return &tank
 }
 
-func ( t *Tank ) CalculateMove ( speed int ) (*Coords, float64) {
+func ( t *Tank ) CalculateMove ( speed float64 ) (*Coords, float64) {
 
   sumMotor := math.Min( t.LeftMotor , t.RightMotor )
 
   radDirection := (math.Pi * t.Direction) / 180
-  x := t.Coords.X + int( math.Cos( radDirection ) * float64(speed) * sumMotor )
-  y := t.Coords.Y + int( math.Sin( radDirection ) * float64(speed) * sumMotor )
+  x := t.Coords.X + int( math.Cos( radDirection ) * speed * sumMotor )
+  y := t.Coords.Y + int( math.Sin( radDirection ) * speed * sumMotor )
 
   rotationSpeed := t.LeftMotor - t.RightMotor
 
-  direction := t.Direction + rotationSpeed * float64(speed)
+  direction := t.Direction + rotationSpeed * speed
 
   if direction < 0 { direction += 360 }
   if direction > 360 { direction -= 360 }
@@ -53,16 +53,20 @@ func ( t *Tank ) Fire () *Bullet {
   return t.Gun.fire( t );
 }
 
-func ( t *Tank ) MoveGun ( speed int ) {
-  diff := t.Gun.MoveToDirection - t.Gun.Direction
+func ( t *Tank ) TurnGun ( speed float64 ) {
+  if ( t.Gun.TurnAngle < 0.1 && t.Gun.TurnAngle > -0.1 ){ return }
+
+  diff := t.Gun.TurnAngle
 
   if diff > 0 {
-    diff = math.Min(float64(speed), diff)
+    diff = math.Min(speed, diff)
   } else {
-    diff = math.Max(float64(-speed), diff)
+    diff = math.Max(-speed, diff)
   }
 
-  if diff > 1 || diff < -1 {
-    t.Gun.Direction += float64(diff)
-  }
+  t.Gun.TurnAngle -= diff
+  t.Gun.Direction += diff 
+
+  if t.Gun.Direction < 0 { t.Gun.Direction += 360 }
+  if t.Gun.Direction > 360 { t.Gun.Direction -= 360 }
 }

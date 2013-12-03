@@ -10,7 +10,9 @@ type Config struct {
         TickDelay       time.Duration
         mapWidth        int
         mapHeight       int
-        TickSpeed       int
+        TankSpeed       float64
+        GunSpeed        float64
+        BulletSpeed        float64
 }
 
 var DefaultConfig = Config{
@@ -19,5 +21,13 @@ var DefaultConfig = Config{
         TickDelay:  100,
         mapWidth:   1024,
         mapHeight:  768,
-        TickSpeed:  20,
+
+        //pixels per tick
+        TankSpeed:  10,
+
+        // grad per tick
+        GunSpeed:  2,
+
+         // puxels per tick
+        BulletSpeed:  15,
 }

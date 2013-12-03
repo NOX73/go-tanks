@@ -133,9 +133,9 @@ func ( w *World ) processGunCommand ( m *i.Message, client i.Client ) {
   gun := message["Gun"].(map[string]interface{})
   tank := client.GetTank().(*Tank)
 
-  if gun["Direction"] != nil {
-    direction := gun["Direction"].(float64)
-    tank.Gun.MoveToDirection = direction
+  if gun["TurnAngle"] != nil {
+    angle := gun["TurnAngle"].(float64)
+    tank.Gun.TurnAngle = angle
   }
 
 }

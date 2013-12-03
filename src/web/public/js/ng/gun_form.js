@@ -1,13 +1,14 @@
-angular.module('app').controller('GunForm', ['$scope', '$tank', function ( $scope, $tank ) {
-  $scope.$watch( function(){ return $tank.gun.Direction }, function(val){ $scope.Direction = $tank.gun.Direction } )
+angular.module('app').controller('GunForm', ['$scope', function ( $scope ) {
+  $scope.TurnAngle = 0
 
   $scope.apply = function () {
 
-    $tank.gun.Direction = $scope.Direction
+    console.log($scope.TurnAngle)
 
     $scope.sendTankCommand({
-      Gun: { Direction: $scope.Direction }
+      Gun: { TurnAngle: $scope.TurnAngle }
     })
+
   }
 
 
