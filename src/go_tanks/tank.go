@@ -2,6 +2,7 @@ package go_tanks
 
 import (
   "math"
+  //log "./log"
 )
 
 type Tank struct {
@@ -20,7 +21,7 @@ func NewTank ( id int, coords *Coords ) *Tank {
     LeftMotor: 0,
     RightMotor: 0,
     Direction: 0,
-    Gun: &Gun{ Direction: 0 },
+    Gun: &Gun{ Direction: 0, MoveToDirection: 0 },
   }
   return &tank
 }
@@ -52,3 +53,16 @@ func ( t *Tank ) Fire () *Bullet {
   return t.Gun.fire( t );
 }
 
+func ( t *Tank ) MoveGun ( speed int ) {
+  diff := t.Gun.MoveToDirection - t.Gun.Direction
+
+  if diff > 0 {
+    diff = math.Min(float64(speed), diff)
+  } else {
+    diff = math.Max(float64(-speed), diff)
+  }
+
+  if diff > 1 || diff < -1 {
+    t.Gun.Direction += float64(diff)
+  }
+}

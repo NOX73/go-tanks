@@ -12,10 +12,15 @@ type Bullet struct {
 }
 
 func NewBullet ( tank *Tank ) *Bullet {
+  direction := tank.Direction + tank.Gun.Direction; 
+
+  if direction < 0 { direction += 360 }
+  if direction > 360 { direction -= 360 }
+
   return &Bullet{
     TankId: tank.Id,
     Coords: &Coords{ tank.Coords.X, tank.Coords.Y },
-    Direction: tank.Gun.Direction,
+    Direction: direction,
   }
 }
 

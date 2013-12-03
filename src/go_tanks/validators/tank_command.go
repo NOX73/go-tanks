@@ -27,6 +27,11 @@ func ValidateTankCommandMessage ( m *i.Message  ) error {
     }
   }
 
+  if message["Gun"] != nil {
+    err := ValidateGunCommand ( m )
+    if err != nil { return err }
+  }
+
   return nil
 }
 

@@ -44,11 +44,13 @@ angular.module('app').controller('WebSocks', function ( $scope ) {
   $scope.isMessage = function () { return $scope.state == 'message' }
   $scope.isSession = function () { return $scope.state == 'session' }
   $scope.isControl = function () { return $scope.state == 'control' }
+  $scope.isGun = function () { return $scope.state == 'gun' }
 
   $scope.setAuth = function () { $scope.state = 'auth' }
   $scope.setMessage = function () { $scope.state = 'message' }
   $scope.setSession = function () { $scope.state = 'session' }
   $scope.setControl = function () { $scope.state = 'control' }
+  $scope.setGun = function () { $scope.state = 'gun' }
 
   $scope.$on('auth:success', $scope.setControl )
 });

@@ -5,5 +5,8 @@ angular.module('app').service('$tank', function () {
   this.Direction = 0
   this.LeftMotor = 0
   this.RightMotor = 0
+  this.gun = {
+    Direction: 0
+  }
 
 });

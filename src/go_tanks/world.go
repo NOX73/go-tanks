@@ -124,6 +124,20 @@ func ( w *World ) processTankCommand ( m *i.Message, client i.Client ) {
   if message["LeftMotor"] != nil { tank.LeftMotor = message["LeftMotor"].(float64)  }
   if message["RightMotor"] != nil { tank.RightMotor = message["RightMotor"].(float64)  }
   if message["Fire"] != nil { w.fireTank(tank) }
+  if message["Gun"] != nil { w.processGunCommand( m, client ) }
+}
+
+func ( w *World ) processGunCommand ( m *i.Message, client i.Client ) {
+  message := *m
+
+  gun := message["Gun"].(map[string]interface{})
+  tank := client.GetTank().(*Tank)
+
+  if gun["Direction"] != nil {
+    direction := gun["Direction"].(float64)
+    tank.Gun.MoveToDirection = direction
+  }
+
 }
 
 func ( w *World ) NewTank ( client i.Client ) {

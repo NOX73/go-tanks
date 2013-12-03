@@ -25,6 +25,7 @@ func ( l *Live ) MoveTanksTick () {
     if( coords.Y < 0 || coords.Y > l.Map.Height ) { coords.Y = tank.Coords.Y }
 
     tank.ApplyMove( coords, direction )
+    tank.MoveGun( l.TickSpeed )
   })
 
 }
