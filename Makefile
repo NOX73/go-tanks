@@ -1,3 +1,3 @@
 
 deps: 
-	@( git submodule sync && git submodule update )
+	@( git submodule init && git submodule update )
