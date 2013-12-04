@@ -4,7 +4,9 @@ Server for game "Tanks" on Golang.
 
 ## Install
 
-Just git clone.
+```
+  make deps
+```
 
 ## Run
 
