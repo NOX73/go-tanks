@@ -7,6 +7,7 @@ type Live struct {
   GunSpeed    float64
   BulletSpeed float64
   Bullets     []*Bullet
+  ObjectIndex *ObjectIndex
 }
 
 func NewLive ( config *Config ) *Live {
@@ -17,6 +18,7 @@ func NewLive ( config *Config ) *Live {
     GunSpeed: config.GunSpeed,
     BulletSpeed: config.BulletSpeed,
     Bullets: make([]*Bullet, 0, 30),
+    ObjectIndex: NewObjectIndex(),
   }
 }
 
@@ -59,6 +61,13 @@ func ( l *Live ) removeBullet ( bullet *Bullet ) {
   if ( f ) { l.Bullets = append( l.Bullets[:i], l.Bullets[i+1:]... ) }
 }
 
+func ( l *Live ) RemoveTank ( tank *Tank ) {
+  delete( l.Tanks, tank.Id )
+}
+
+func ( l *Live ) remove ( tank *Tank ) {
+}
+
 func ( l *Live ) EachBUllets ( f func( *Bullet, int ) ) {
   var i int
   for _, b := range l.Bullets { f(b, i); i++ }
@@ -70,5 +79,7 @@ func ( l *Live ) EachTanks ( f func( *Tank, int ) ) {
 }
 
 func ( l *Live ) AddTank ( tank *Tank ) {
+  l.ObjectIndex.Add( tank )
+  l.ObjectIndex.Loging()
   l.Tanks[tank.Id] = tank
 }

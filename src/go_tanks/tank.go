@@ -70,3 +70,7 @@ func ( t *Tank ) TurnGun ( speed float64 ) {
   if t.Gun.Direction < 0 { t.Gun.Direction += 360 }
   if t.Gun.Direction > 360 { t.Gun.Direction -= 360 }
 }
+
+func ( t *Tank ) GetCoords () *Coords {
+  return t.Coords
+}

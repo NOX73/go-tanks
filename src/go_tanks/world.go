@@ -164,7 +164,7 @@ func ( w *World ) addNewTank ( client i.Client ) {
 }
 
 func ( w *World ) removeTank ( tank *Tank ) {
-  delete( *w.Tanks(), tank.Id )
+  w.Live.RemoveTank( tank )
   log.World("Tank with id = ", tank.Id, " was removed.")
 }
 
