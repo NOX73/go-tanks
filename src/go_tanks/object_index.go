@@ -2,7 +2,7 @@ package go_tanks
 
 import (
   "container/list"
-  log "./log"
+  //log "./log"
 )
 
 type Coordsable interface {
@@ -72,12 +72,3 @@ func ( o *ObjectIndex ) findForAddY ( item Coordsable ) *list.Element {
   return nil
 }
 
-func ( o *ObjectIndex ) Loging () {
-
-  log.Debug("Log X")
-
-  for e := o.listX.Front(); e != nil; e = e.Next() {
-    log.Debug(e.Value.( Coordsable ).GetCoords().X)
-  }
-
-}

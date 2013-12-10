@@ -80,6 +80,5 @@ func ( l *Live ) EachTanks ( f func( *Tank, int ) ) {
 
 func ( l *Live ) AddTank ( tank *Tank ) {
   l.ObjectIndex.Add( tank )
-  l.ObjectIndex.Loging()
   l.Tanks[tank.Id] = tank
 }
