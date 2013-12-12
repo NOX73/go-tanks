@@ -32,9 +32,16 @@ func ( t *Tank ) CalculateMove ( speed float64 ) (*Coords, float64) {
 
   sumMotor := math.Min( t.LeftMotor , t.RightMotor )
 
-  radDirection := (math.Pi * t.Direction) / 180
-  x := t.Coords.X + math.Cos( radDirection ) * speed * sumMotor 
-  y := t.Coords.Y + math.Sin( radDirection ) * speed * sumMotor 
+  var x,y float64
+
+  if t.LeftMotor * t.RightMotor > 0 {
+    radDirection := (math.Pi * t.Direction) / 180
+    x = t.Coords.X + math.Cos( radDirection ) * speed * sumMotor 
+    y = t.Coords.Y + math.Sin( radDirection ) * speed * sumMotor 
+  } else {
+    x = t.Coords.X
+    y = t.Coords.Y
+  }
 
   rotationSpeed := t.LeftMotor - t.RightMotor
 
