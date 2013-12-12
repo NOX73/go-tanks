@@ -14,6 +14,7 @@ type World struct {
   Clients         []i.Client
   Live            *Live
   TickCounter     int
+  TankRadius      int
 }
 
 func NewWorld ( config *Config ) *World {
@@ -22,6 +23,7 @@ func NewWorld ( config *Config ) *World {
     TickDelay: config.TickDelay,
     CommandChannel: make(i.MessageChan, 5),
     Live: NewLive( config ),
+    TankRadius: config.TankRadius,
   };
 
   return world
@@ -153,7 +155,7 @@ func ( w *World ) nextObjectId () int {
 func ( w *World ) addNewTank ( client i.Client ) {
   id := w.nextObjectId()
   coords := w.Map().GetRandomCoords()
-  tank := NewTank(id, coords)
+  tank := NewTank(id, coords, w.TankRadius)
 
   w.Live.AddTank( tank )
 

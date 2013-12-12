@@ -11,8 +11,9 @@ type Config struct {
         mapWidth        int
         mapHeight       int
         TankSpeed       float64
+        TankRadius      int
         GunSpeed        float64
-        BulletSpeed        float64
+        BulletSpeed     float64
 }
 
 var DefaultConfig = Config{
@@ -24,6 +25,7 @@ var DefaultConfig = Config{
 
         //pixels per tick
         TankSpeed:  10,
+        TankRadius: 10,
 
         // grad per tick
         GunSpeed:  2,

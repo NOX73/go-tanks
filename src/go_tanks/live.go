@@ -1,5 +1,9 @@
 package go_tanks
 
+import (
+  //log "./log"
+)
+
 type Live struct {
   Tanks       map[int]*Tank
   Map         *Map
@@ -27,10 +31,8 @@ func ( l *Live ) MoveTanksTick () {
   l.EachTanks ( func ( tank *Tank, _ int ) {
     coords, direction := tank.CalculateMove( l.TankSpeed )
 
-    if( coords.X < 0 || coords.X > l.Map.Width ) { coords.X = tank.Coords.X }
-    if( coords.Y < 0 || coords.Y > l.Map.Height ) { coords.Y = tank.Coords.Y }
+    l.ObjectIndex.ApplyTankPosition(coords, direction, tank, l.Map)
 
-    tank.ApplyMove( coords, direction )
     tank.TurnGun( l.GunSpeed )
   })
 
@@ -40,7 +42,9 @@ func ( l *Live ) MoveBulletsTick () {
   l.EachBUllets ( func ( b *Bullet, _ int ) {
     coords, direction := b.CalculateMove( l.BulletSpeed )
 
-    if( coords.X < 0 || coords.X > l.Map.Width || coords.Y < 0 || coords.Y > l.Map.Height ) {
+    onMap := l.ObjectIndex.ValidateBulletPosition(coords, direction, b, l.Map)
+
+    if !onMap {
       l.removeBullet( b )
     } else {
       b.ApplyMove( coords, direction )
@@ -62,6 +66,7 @@ func ( l *Live ) removeBullet ( bullet *Bullet ) {
 }
 
 func ( l *Live ) RemoveTank ( tank *Tank ) {
+  l.ObjectIndex.Remove( tank )
   delete( l.Tanks, tank.Id )
 }
 

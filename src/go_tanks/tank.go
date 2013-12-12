@@ -12,9 +12,10 @@ type Tank struct {
   LeftMotor     float64
   RightMotor    float64
   Gun           *Gun
+  Radius        int
 }
 
-func NewTank ( id int, coords *Coords ) *Tank {
+func NewTank ( id int, coords *Coords, radius int ) *Tank {
   tank := Tank{
     Id: id,
     Coords: coords,
@@ -22,6 +23,7 @@ func NewTank ( id int, coords *Coords ) *Tank {
     RightMotor: 0,
     Direction: 0,
     Gun: &Gun{ Direction: 0, TurnAngle: 0 },
+    Radius: radius,
   }
   return &tank
 }
@@ -73,4 +75,8 @@ func ( t *Tank ) TurnGun ( speed float64 ) {
 
 func ( t *Tank ) GetCoords () *Coords {
   return t.Coords
+}
+
+func ( t *Tank ) GetRadius () int {
+  return t.Radius
 }
