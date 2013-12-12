@@ -84,35 +84,52 @@ angular.module('app').controller('GameMap', ['$scope', '$tank', function ( $scop
   })
 
   $scope.pressLeft = function ($event) {
-    $tank.LeftMotor = 0.4
-    $tank.RightMotor = 0.5
-    $scope.sendTankCommand({ LeftMotor: $tank.LeftMotor, RightMotor: $tank.RightMotor })
-
     $event.preventDefault();
+
+    if($tank.RightMotor + 0.1 < 1)
+      $tank.RightMotor += 0.1
+    if($tank.LeftMotor - 0.1 > -1)
+      $tank.LeftMotor -= 0.1
+    $scope.sendTankCommand({ LeftMotor: $tank.LeftMotor, RightMotor: $tank.RightMotor })
   }
 
   $scope.pressUp = function ($event) {
-    $tank.LeftMotor = 1
-    $tank.RightMotor = 1
-    $scope.sendTankCommand({ LeftMotor: $tank.LeftMotor, RightMotor: $tank.RightMotor })
-
     $event.preventDefault();
+
+    if($tank.LeftMotor + 0.1 > 1){return}
+    if($tank.RightMotor + 0.1 > 1){return}
+    $tank.LeftMotor += 0.1
+    $tank.RightMotor += 0.1
+    $scope.sendTankCommand({ LeftMotor: $tank.LeftMotor, RightMotor: $tank.RightMotor })
   }
 
   $scope.pressRight = function ($event) {
-    $tank.LeftMotor = 0.5
-    $tank.RightMotor = 0.4
-    $scope.sendTankCommand({ LeftMotor: $tank.LeftMotor, RightMotor: $tank.RightMotor })
-
     $event.preventDefault();
+
+
+    if($tank.LeftMotor + 0.1 < 1)
+      $tank.LeftMotor += 0.1
+    if($tank.RightMotor - 0.1 > -1)
+      $tank.RightMotor -= 0.1
+    $scope.sendTankCommand({ LeftMotor: $tank.LeftMotor, RightMotor: $tank.RightMotor })
   }
 
   $scope.pressDown = function ($event) {
+    $event.preventDefault();
+
+    if($tank.LeftMotor - 0.1 < -1){return}
+    if($tank.RightMotor - 0.1 < -1){return}
+    $tank.LeftMotor -= 0.1
+    $tank.RightMotor -= 0.1
+    $scope.sendTankCommand({ LeftMotor: $tank.LeftMotor, RightMotor: $tank.RightMotor })
+  }
+
+  $scope.pressSpace = function ($event) {
+    $event.preventDefault();
+
     $tank.LeftMotor = 0
     $tank.RightMotor = 0
     $scope.sendTankCommand({ LeftMotor: $tank.LeftMotor, RightMotor: $tank.RightMotor })
-
-    $event.preventDefault();
   }
 
   $scope.pressEnter = function ($event) {

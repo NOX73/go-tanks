@@ -112,7 +112,7 @@ func ( o *ObjectIndex ) ApplyTankPosition ( coords *Coords, direction float64, t
 
     diff := h - float64(maxDist)
 
-    if diff < -1 { o.fixCoords(diff, coords, direction) }
+    if diff < -1 { o.fixCoords(diff, coords, tank.Direction) }
   }
 
   for e := element.Next(); e != nil; e = e.Next() {
@@ -126,7 +126,7 @@ func ( o *ObjectIndex ) ApplyTankPosition ( coords *Coords, direction float64, t
 
     diff := h - float64(maxDist)
 
-    if diff < -1 { o.fixCoords(diff, coords, direction) }
+    if diff < -1 { o.fixCoords(diff, coords, tank.Direction) }
   }
 
   tank.ApplyMove( coords, direction )
@@ -150,11 +150,18 @@ func ( o *ObjectIndex ) ResortElement ( element *list.Element ) {
 }
 
 func ( o *ObjectIndex ) fixCoords (diff float64, coords *Coords, direction float64) {
-  diff = math.Abs(diff)
+  //log.Debug("")
+  //log.Debug("fix coords")
+  diff = math.Abs(diff) 
+  //log.Debug("diff=", diff)
   radDirection := (math.Pi * direction) / 180
 
   diffX := diff * math.Cos( radDirection )
   diffY := diff * math.Sin( radDirection )
+
+  //log.Debug("direction=", direction)
+  //log.Debug("diffX=", diffX)
+  //log.Debug("diffY=", diffY)
 
   coords.X -= int(diffX)
   coords.Y -= int(diffY)
