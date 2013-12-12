@@ -91,15 +91,16 @@ func ( o *ObjectIndex ) findForAddY ( item Coordsable ) *list.Element {
 }
 
 func ( o *ObjectIndex ) ApplyTankPosition ( coords *Coords, direction float64, tank *Tank, m *Map ) {
+  radius := float64(tank.Radius)
 
-  if( coords.X - tank.Radius < 0 ) { coords.X = tank.Radius }
-  if( coords.Y - tank.Radius < 0 ) { coords.Y = tank.Radius }
+  if( coords.X - radius < 0 ) { coords.X = radius }
+  if( coords.Y - radius< 0 ) { coords.Y = radius }
 
-  if( coords.X + tank.Radius > m.Width ) { coords.X = m.Width - tank.Radius }
-  if( coords.Y + tank.Radius > m.Height ) { coords.Y = m.Height - tank.Radius }
+  if( coords.X + radius > float64(m.Width) ) { coords.X = float64( m.Width ) - radius }
+  if( coords.Y + radius > float64(m.Height) ) { coords.Y = float64( m.Height ) - radius }
 
   element := o.itemsMap[tank].X
-  maxDist := 2*tank.Radius //Max distance for check
+  maxDist := 2*radius //Max distance for check
 
   for e := element.Prev(); e != nil; e = e.Prev() {
     v, ok := e.Value.(*Tank) //Prev tank
@@ -126,7 +127,7 @@ func ( o *ObjectIndex ) ApplyTankPosition ( coords *Coords, direction float64, t
 
     diff := h - float64(maxDist)
 
-    if diff < -1 { o.fixCoords(diff, coords, tank.Direction) }
+    if diff < 0 { o.fixCoords(diff, coords, tank.Direction) }
   }
 
   tank.ApplyMove( coords, direction )
@@ -150,23 +151,16 @@ func ( o *ObjectIndex ) ResortElement ( element *list.Element ) {
 }
 
 func ( o *ObjectIndex ) fixCoords (diff float64, coords *Coords, direction float64) {
-  //log.Debug("")
-  //log.Debug("fix coords")
   diff = math.Abs(diff) 
-  //log.Debug("diff=", diff)
   radDirection := (math.Pi * direction) / 180
 
   diffX := diff * math.Cos( radDirection )
   diffY := diff * math.Sin( radDirection )
 
-  //log.Debug("direction=", direction)
-  //log.Debug("diffX=", diffX)
-  //log.Debug("diffY=", diffY)
-
-  coords.X -= int(diffX)
-  coords.Y -= int(diffY)
+  coords.X -= diffX * 1.1
+  coords.Y -= diffY * 1.1
 }
 
 func ( o *ObjectIndex ) ValidateBulletPosition ( coords *Coords, direction float64, bullet *Bullet, m *Map ) ( bool ) {
-    return !(coords.X < 0 || coords.X > m.Width || coords.Y < 0 || coords.Y > m.Height)
+    return !(coords.X < 0 || coords.X > float64(m.Width) || coords.Y < 0 || coords.Y > float64(m.Height))
 }

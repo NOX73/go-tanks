@@ -27,8 +27,8 @@ func NewBullet ( tank *Tank ) *Bullet {
 func ( b *Bullet ) CalculateMove ( speed float64 ) (*Coords, float64) {
 
   radDirection := (math.Pi * b.Direction) / 180
-  x := b.Coords.X + int( math.Cos( radDirection ) * speed )
-  y := b.Coords.Y + int( math.Sin( radDirection ) * speed )
+  x := b.Coords.X + math.Cos( radDirection ) * speed
+  y := b.Coords.Y + math.Sin( radDirection ) * speed
 
   return &Coords{X: x, Y: y}, b.Direction
 }

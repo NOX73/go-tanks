@@ -10,8 +10,8 @@ type Map struct {
 }
 
 type Coords struct {
-  X   int
-  Y   int
+  X   float64
+  Y   float64
 }
 
 func NewMap ( config *Config ) *Map {
@@ -25,5 +25,5 @@ func ( m* Map ) GetRandomCoords () *Coords {
   x := rand.Intn( m.Width )
   y := rand.Intn( m.Height )
 
-  return &Coords{X: x, Y: y}
+  return &Coords{X: float64(x), Y: float64(y)}
 }
