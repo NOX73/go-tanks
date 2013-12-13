@@ -22,15 +22,19 @@ const (
 
 type Client struct {
   Connection  IConn
-  State       int
-  login       string
-  password    string
-  Tank        *Tank
-  outBox      i.MessageChan
-  inBox       i.MessageChan
-  messageBox  i.MessageChan
+  State         int
+  login         string
+  password      string
+  Tank          *Tank
+  // inside message channels
+  outBox        i.MessageChan
+  inBox         i.MessageChan
+  // client message channels
+  inClientBox   i.MessageChan
+  outClientBox  i.MessageChan
+
   worldRecieveDisabled bool
-  Closed    bool
+  Closed        bool
 }
 
 func ( c *Client )  RemoteAddr () ( net.Addr ) {
@@ -43,7 +47,8 @@ func NewClient ( conn IConn ) ( *Client ) {
     State: NON_AUTHORIZED,
     inBox: make( i.MessageChan, INBOX_CAPACITY ),
     outBox: make( i.MessageChan, OUTBOX_CAPACITY ),
-    messageBox: make( i.MessageChan, CLIENT_BUFFER_CAPACITY ),
+    inClientBox: make( i.MessageChan, CLIENT_BUFFER_CAPACITY ),
+    outClientBox: make( i.MessageChan, CLIENT_BUFFER_CAPACITY ),
     worldRecieveDisabled: false,
     Closed: false,
   }
@@ -61,6 +66,15 @@ func NewNetClient ( conn *net.Conn ) ( *Client ) {
 
 func ( c *Client ) Init () {
   go c.startSendMessageLoop()
+  go c.startReceiveMessageLoop()
+}
+
+func ( c *Client ) ReInit () {
+  c.Tank = nil
+  c.State = NON_AUTHORIZED
+  c.login = ""
+  c.password = ""
+  log.Client("Client reinitialized.")
 }
 
 func ( c *Client ) Close () {
@@ -68,24 +82,43 @@ func ( c *Client ) Close () {
 
   // Wait for write all messages
   <- time.After(time.Second)
-  close(c.messageBox)
+
+  c.Connection.Close()
+  close(c.outClientBox)
 
   log.Client("Client closed.")
 }
 
 func ( c *Client ) SendMessage ( m *i.Message ) error {
   select {
-  case c.messageBox <- m:
+  case c.outClientBox <- m:
     return nil
   default:
     return errors.New("Slow client.")
   }
 }
 
-func ( c *Client ) startSendMessageLoop () {
-  defer c.Connection.Close()
+func ( c *Client ) startReceiveMessageLoop () {
+  defer close(c.inClientBox)
 
-  for message := range c.messageBox {
+  for {
+    message, err := c.Connection.ReadMessage()
+    if err != nil { break }
+
+    select {
+    case c.inClientBox <- message:
+    default:
+    }
+
+  }
+
+  log.Client("Receive message finished.")
+}
+func ( c *Client ) startSendMessageLoop () {
+
+  for {
+    message, ok := <- c.outClientBox
+    if !ok { break }
     c.Connection.WriteMessage( message )
   }
 
@@ -93,7 +126,7 @@ func ( c *Client ) startSendMessageLoop () {
 }
 
 func ( c *Client ) ReadMessage () ( *i.Message, error ) {
-  return c.Connection.ReadMessage()
+  return <- c.inClientBox, nil
 }
 
 func ( c *Client ) SetAuthCredentials ( login, password string ) {
@@ -129,20 +162,12 @@ func ( c *Client ) OutBox () i.MessageChan {
   return c.outBox
 }
 
-func ( c *Client ) ReadInBox () *i.Message {
-  return <-c.inBox
+func ( c *Client ) InClientBox () i.MessageChan {
+  return c.inClientBox
 }
 
-func ( c * Client ) WriteInBox ( m *i.Message ) {
-  c.inBox <- m
-}
-
-func ( c *Client ) ReadOutBox () *i.Message {
-  return <-c.outBox
-}
-
-func ( c * Client ) WriteOutBox ( m *i.Message )  {
-  c.outBox <- m
+func ( c *Client ) OutClientBox () i.MessageChan {
+  return c.outClientBox
 }
 
 func ( c *Client ) SendWorld ( m *i.Message ) {

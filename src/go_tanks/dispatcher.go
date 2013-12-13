@@ -20,11 +20,15 @@ func ( d *Dispatcher ) dispatch () error {
   defer d.Client.Close()
   var err error;
 
-  err = d.authStep();
-  if ( err != nil ) { return d.sendError( err ) }
+  for {
+    err = d.authStep();
+    if ( err != nil ) { return d.sendError( err ) }
 
-  err = d.gameStep();
-  if ( err != nil ) { return d.sendError( err ) }
+    err = d.gameStep();
+    if ( err != nil ) { return d.sendError( err ) }
+
+    d.Client.ReInit()
+  }
 
   return nil
 }

@@ -5,6 +5,7 @@ const (
   NEW_CLIENT
   REMOVE_CLIENT
   TANK_COMMAND
+  HIT_TANK
 )
 
 type Message            map[string]interface{}
@@ -26,15 +27,15 @@ type Client interface {
   OutBox () MessageChan
   InBox () MessageChan
 
-  ReadInBox () *Message
-  WriteInBox ( *Message )
-  ReadOutBox () *Message
-  WriteOutBox ( *Message )
+  OutClientBox () MessageChan
+  InClientBox () MessageChan
 
   OutBoxHasPlace () bool
 
   SendWorld ( *Message )
   SetWorldRecieveDisabled( bool )
+
+  ReInit()
 }
 
 var typeToIdMaping = map[string]int {

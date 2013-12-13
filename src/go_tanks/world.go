@@ -144,7 +144,7 @@ func ( w *World ) processGunCommand ( m *i.Message, client i.Client ) {
 
 func ( w *World ) NewTank ( client i.Client ) {
   message := i.Message{"TypeId": i.NEW_TANK}
-  client.WriteOutBox( &message )
+  client.OutBox() <- &message
 }
 
 func ( w *World ) nextObjectId () int {
@@ -162,7 +162,7 @@ func ( w *World ) addNewTank ( client i.Client ) {
   replay := i.Message{ "Tank": tank, "Type": "Tank" }
 
   log.World("New Tank with id = ", id)
-  client.WriteInBox( &replay )
+  client.InBox() <- &replay
 }
 
 func ( w *World ) removeTank ( tank *Tank ) {
@@ -175,9 +175,9 @@ func ( w *World ) addNewClient ( client i.Client ) {
   log.World("Client added. Clients count = ", len( w.Clients ))
 }
 
-
 func ( w *World) removeClient ( client i.Client ) {
   index := -1;
+
   for i, c := range w.Clients {
     if c == client {
       index = i
@@ -198,7 +198,26 @@ func ( w *World) removeClient ( client i.Client ) {
 
 func ( w *World ) liveTick () {
   w.Live.MoveTanksTick()
-  w.Live.MoveBulletsTick()
+  hits := w.Live.MoveBulletsTick()
+  if len(hits) != 0 { w.handleHits(hits) }
+}
+
+func ( w *World ) handleHits ( hits []*Bullet ) {
+  for _, h := range hits {
+    w.Live.removeBullet(h)
+    tank := h.HitToTank
+
+    var client i.Client
+
+    for _, client = range w.Clients {
+      if client.GetTank().(*Tank) == tank { break }
+    }
+
+    w.removeClient(client)
+
+    message := &i.Message{"TypeId": i.HIT_TANK}
+    client.InBox() <- message
+  }
 }
 
 func ( w *World ) fireTank ( tank *Tank ) {

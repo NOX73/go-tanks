@@ -5,6 +5,7 @@ import (
   i "../interfaces"
   v "../validators"
   h "./handlers"
+  "errors"
 )
 
 type GameController struct {
@@ -15,25 +16,40 @@ func ( c *GameController ) JoinToGame () error {
   c.addToWorld()
 
   c.World.NewTank( c.Client )
-  message := *( c.Client.ReadInBox() )
+  message := *( <-c.Client.InBox() )
 
   message["Message"] = "Your tank id"
 
   c.Client.SetTank( message["Tank"] )
   c.Client.SendMessage( &message )
 
+  inClientBox := c.Client.InClientBox()
+  inBox := c.Client.InBox()
+
   for {
-    message, err := c.Client.ReadMessage()
-    if( err != nil ) {
-      c.removeFromWorld()
-      return err
+    select {
+    case message, ok := <- inClientBox:
+
+      if !ok {
+        c.removeFromWorld()
+        return errors.New("Receive channel closed.")
+      }
+
+      err := v.ValidateUserMessage( message )
+
+      if ( err != nil ) { c.Client.SendMessage( i.ErrorMessage( err.Error() ) ); continue }
+
+      c.handleMessage( message )
+
+    case message, _ := <- inBox:
+
+      switch message.GetTypeId() {
+      case i.HIT_TANK:
+        c.Client.SendMessage( &i.Message{"Type":"Hit", "Message": "Your are die :("} )
+        return nil
+      }
+
     }
-
-    err = v.ValidateUserMessage( message )
-
-    if ( err != nil ) { c.Client.SendMessage( i.ErrorMessage( err.Error() ) ); continue }
-
-    c.handleMessage( message )
   }
 
   return nil

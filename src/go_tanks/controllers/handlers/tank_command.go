@@ -7,9 +7,9 @@ import (
 
 func TankCommandMessageHandler( w i.World, c i.Client, m *i.Message ) error {
 
-  if c.OutBoxHasPlace() {
-    c.WriteOutBox( m )
-  } else {
+  select {
+  case c.OutBox() <- m:
+  default:
     c.SendMessage( i.ErrorMessage( "You are sending messages too fast." ) )
   }
 

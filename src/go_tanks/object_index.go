@@ -3,7 +3,7 @@ package go_tanks
 import (
   "container/list"
   "math"
-  //log "./log"
+  log "./log"
 )
 
 type IndexItem struct {
@@ -36,7 +36,9 @@ func ( o *ObjectIndex ) Add ( item Coordsable ) {
 }
 
 func ( o *ObjectIndex ) Remove ( item Coordsable ) {
-  e := o.itemsMap[item]
+  e, ok := o.itemsMap[item]
+  if !ok { log.Warning("Index hasn't item for remove.", item); return }
+
   o.listX.Remove(e.X)
   o.listY.Remove(e.Y)
   delete(o.itemsMap, item)

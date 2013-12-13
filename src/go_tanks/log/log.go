@@ -30,7 +30,7 @@ func Fatal(v ...interface{}) {
 }
 
 func Warning(v ...interface{}) {
-  log.Fatalf(WARNING, fmt.Sprint(v...))
+  log.Printf(WARNING, fmt.Sprint(v...))
 }
 
 func World(v ...interface{}) {

@@ -9,6 +9,7 @@ type Bullet struct {
   TankId        int
   Coords        *Coords
   Direction     float64
+  HitToTank     *Tank
 }
 
 func NewBullet ( tank *Tank ) *Bullet {
@@ -46,4 +47,7 @@ func ( b *Bullet ) GetRadius () int {
   return 1
 }
 
+func ( b *Bullet ) HitTo (tank *Tank) {
+  b.HitToTank = tank
+}
 

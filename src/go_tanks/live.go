@@ -38,8 +38,9 @@ func ( l *Live ) MoveTanksTick () {
 
 }
 
-func ( l *Live ) MoveBulletsTick () {
+func ( l *Live ) MoveBulletsTick () (hits []*Bullet) {
   var forRemove = make([]*Bullet,0,5)
+  hits = make([]*Bullet,0,5)
 
   l.EachBUllets ( func ( b *Bullet, _ int ) {
     coords, direction := b.CalculateMove( l.BulletSpeed )
@@ -51,7 +52,8 @@ func ( l *Live ) MoveBulletsTick () {
     } else if tankHit == nil{
       b.ApplyMove( coords, direction )
     } else {
-      forRemove = append(forRemove, b)
+      b.HitTo(tankHit)
+      hits = append(hits, b)
     }
 
   })
@@ -59,6 +61,8 @@ func ( l *Live ) MoveBulletsTick () {
   for _, b := range forRemove {
     l.removeBullet( b )
   }
+
+  return hits
 }
 
 func ( l *Live ) removeBullet ( bullet *Bullet ) {
