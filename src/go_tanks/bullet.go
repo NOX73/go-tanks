@@ -38,4 +38,12 @@ func ( b *Bullet ) ApplyMove ( c *Coords, d float64 ) {
   b.Direction = d
 }
 
+func ( b *Bullet ) GetCoords () *Coords {
+  return b.Coords
+}
+
+func ( b *Bullet ) GetRadius () int {
+  return 1
+}
+
 

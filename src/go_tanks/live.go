@@ -22,7 +22,7 @@ func NewLive ( config *Config ) *Live {
     GunSpeed: config.GunSpeed,
     BulletSpeed: config.BulletSpeed,
     Bullets: make([]*Bullet, 0, 30),
-    ObjectIndex: NewObjectIndex(),
+    ObjectIndex: NewObjectIndex(float64(config.TankRadius * 2)),
   }
 }
 
@@ -39,18 +39,26 @@ func ( l *Live ) MoveTanksTick () {
 }
 
 func ( l *Live ) MoveBulletsTick () {
+  var forRemove = make([]*Bullet,0,5)
+
   l.EachBUllets ( func ( b *Bullet, _ int ) {
     coords, direction := b.CalculateMove( l.BulletSpeed )
 
-    onMap := l.ObjectIndex.ValidateBulletPosition(coords, direction, b, l.Map)
+    tankHit, onMap := l.ObjectIndex.ValidateBulletPosition(coords, direction, b, l.Map)
 
     if !onMap {
-      l.removeBullet( b )
-    } else {
+      forRemove = append(forRemove, b)
+    } else if tankHit == nil{
       b.ApplyMove( coords, direction )
+    } else {
+      forRemove = append(forRemove, b)
     }
 
   })
+
+  for _, b := range forRemove {
+    l.removeBullet( b )
+  }
 }
 
 func ( l *Live ) removeBullet ( bullet *Bullet ) {
@@ -62,15 +70,13 @@ func ( l *Live ) removeBullet ( bullet *Bullet ) {
     if b == bullet { f = true; break }
   }
 
+  l.ObjectIndex.Remove( bullet )
   if ( f ) { l.Bullets = append( l.Bullets[:i], l.Bullets[i+1:]... ) }
 }
 
 func ( l *Live ) RemoveTank ( tank *Tank ) {
   l.ObjectIndex.Remove( tank )
   delete( l.Tanks, tank.Id )
-}
-
-func ( l *Live ) remove ( tank *Tank ) {
 }
 
 func ( l *Live ) EachBUllets ( f func( *Bullet, int ) ) {
@@ -86,4 +92,9 @@ func ( l *Live ) EachTanks ( f func( *Tank, int ) ) {
 func ( l *Live ) AddTank ( tank *Tank ) {
   l.ObjectIndex.Add( tank )
   l.Tanks[tank.Id] = tank
+}
+
+func ( l *Live ) AddBullet ( bullet *Bullet ) {
+  l.ObjectIndex.Add( bullet )
+  l.Bullets = append(l.Bullets, bullet)
 }

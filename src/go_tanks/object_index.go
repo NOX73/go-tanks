@@ -20,12 +20,13 @@ type Coordsable interface {
 
 type ObjectIndex struct {
   listX         *list.List
-  listY         *list.List
+  listY         *list.List // Not use yet
   itemsMap      ItemsMap
+  maxDistance   float64
 }
 
-func NewObjectIndex() *ObjectIndex {
-  return &ObjectIndex{ list.New(), list.New(), make(ItemsMap) }
+func NewObjectIndex( maxDistance float64 ) *ObjectIndex {
+  return &ObjectIndex{ list.New(), list.New(), make(ItemsMap), maxDistance }
 }
 
 func ( o *ObjectIndex ) Add ( item Coordsable ) {
@@ -90,6 +91,24 @@ func ( o *ObjectIndex ) findForAddY ( item Coordsable ) *list.Element {
   return nil
 }
 
+func ( o *ObjectIndex ) checkApplyTankPosition ( tank *Tank, e *list.Element, radius float64, coords *Coords ) bool {
+  value := e.Value.( Coordsable )
+  c := value.GetCoords()
+
+  if math.Abs(c.X - coords.X) >= o.maxDistance { return true }
+
+  tank, ok := value.(*Tank)
+  if !ok { return false }
+
+  h := math.Hypot(coords.X - c.X, coords.Y - c.Y)
+
+  diff := h - radius*2
+
+  if diff < -1 { o.fixCoords( diff, coords, tank.Direction ) }
+
+  return false
+}
+
 func ( o *ObjectIndex ) ApplyTankPosition ( coords *Coords, direction float64, tank *Tank, m *Map ) {
   radius := float64(tank.Radius)
 
@@ -100,40 +119,18 @@ func ( o *ObjectIndex ) ApplyTankPosition ( coords *Coords, direction float64, t
   if( coords.Y + radius > float64(m.Height) ) { coords.Y = float64( m.Height ) - radius }
 
   element := o.itemsMap[tank].X
-  maxDist := 2*radius //Max distance for check
 
   for e := element.Prev(); e != nil; e = e.Prev() {
-    v, ok := e.Value.(*Tank) //Prev tank
-    if !ok {continue;}
-    c := v.GetCoords() // Prev tank coords
-
-    if coords.X - c.X > maxDist {break;}
-
-    h := math.Hypot(float64(coords.X - c.X), float64(coords.Y - c.Y))
-
-    diff := h - float64(maxDist)
-
-    if diff < -1 { o.fixCoords(diff, coords, tank.Direction) }
+    if o.checkApplyTankPosition(tank, e, radius, coords) {break}
   }
 
   for e := element.Next(); e != nil; e = e.Next() {
-    v, ok := e.Value.(*Tank) //Prev tank
-    if !ok {continue;}
-    c := v.GetCoords() // Prev tank coords
-
-    if c.X - coords.X > maxDist {break;}
-
-    h := math.Hypot(float64(coords.X - c.X), float64(coords.Y - c.Y))
-
-    diff := h - float64(maxDist)
-
-    if diff < 0 { o.fixCoords(diff, coords, tank.Direction) }
+    if o.checkApplyTankPosition(tank, e, radius, coords) {break}
   }
 
   tank.ApplyMove( coords, direction )
 
   o.ResortElement(element)
-
 }
 
 func ( o *ObjectIndex ) ResortElement ( element *list.Element ) {
@@ -151,7 +148,7 @@ func ( o *ObjectIndex ) ResortElement ( element *list.Element ) {
 }
 
 func ( o *ObjectIndex ) fixCoords (diff float64, coords *Coords, direction float64) {
-  diff = math.Abs(diff) 
+  diff = math.Abs(diff)
   radDirection := (math.Pi * direction) / 180
 
   diffX := diff * math.Cos( radDirection )
@@ -161,6 +158,41 @@ func ( o *ObjectIndex ) fixCoords (diff float64, coords *Coords, direction float
   coords.Y -= diffY * 1.1
 }
 
-func ( o *ObjectIndex ) ValidateBulletPosition ( coords *Coords, direction float64, bullet *Bullet, m *Map ) ( bool ) {
-    return !(coords.X < 0 || coords.X > float64(m.Width) || coords.Y < 0 || coords.Y > float64(m.Height))
+func ( o *ObjectIndex ) ValidateBulletPosition ( coords *Coords, direction float64, bullet *Bullet, m *Map ) ( tankHit *Tank, inMap bool ) {
+  element := o.itemsMap[bullet].X
+
+  if(coords.X < 0 || coords.X > float64(m.Width) || coords.Y < 0 || coords.Y > float64(m.Height)) {return nil, false}
+
+  for e := element.Prev(); e != nil; e = e.Prev() {
+    hit, b := o.checkApplyBulletPosition(e, coords)
+    if hit {return e.Value.(*Tank), true }
+    if b { break }
+  }
+
+  for e := element.Next(); e != nil; e = e.Next() {
+    hit, b := o.checkApplyBulletPosition(e, coords)
+    if hit { return e.Value.(*Tank), true }
+    if b { break }
+  }
+
+  o.ResortElement(element)
+
+  return nil, true
+}
+
+func ( o *ObjectIndex ) checkApplyBulletPosition (e *list.Element, coords *Coords) (isHit, isBreak bool) {
+
+  value := e.Value.( Coordsable )
+  c := value.GetCoords()
+
+  if c.X - coords.X >= o.maxDistance { return false, true }
+
+  tank, ok := value.(*Tank)
+  if !ok { return false, false }
+
+  h := math.Hypot(float64(coords.X - c.X), float64(coords.Y - c.Y))
+
+  if h < float64(tank.GetRadius()) { return true, true }
+
+  return false, false
 }

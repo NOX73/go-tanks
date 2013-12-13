@@ -5,7 +5,7 @@ angular.module('app').controller('WebSocks', function ( $scope ) {
   var socket;
 
   $scope.initSocket = function () {
-    socket = new WebSocket("ws://localhost:9000/ws"); 
+    socket = new WebSocket("ws://" + window.location.host + "/ws")
 
     socket.onmessage = function ( event ) {
       message = JSON.parse(event.data)

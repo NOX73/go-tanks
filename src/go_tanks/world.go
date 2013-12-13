@@ -179,7 +179,6 @@ func ( w *World ) addNewClient ( client i.Client ) {
 func ( w *World) removeClient ( client i.Client ) {
   index := -1;
   for i, c := range w.Clients {
-
     if c == client {
       index = i
       break
@@ -205,5 +204,5 @@ func ( w *World ) liveTick () {
 func ( w *World ) fireTank ( tank *Tank ) {
   bullet := tank.Fire()
   bullet.Id = w.nextObjectId()
-  w.Live.Bullets = append(w.Live.Bullets, bullet)
+  w.Live.AddBullet(bullet)
 }
