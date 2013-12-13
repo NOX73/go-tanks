@@ -4,7 +4,7 @@ import (
   log "./log"
   controllers "./controllers"
   i "./interfaces"
-  "fmt"
+  //"fmt"
 )
 
 type Dispatcher struct {
@@ -17,13 +17,14 @@ func ( d *Dispatcher ) run () {
 }
 
 func ( d *Dispatcher ) dispatch () error {
+  defer d.Client.Close()
   var err error;
 
   err = d.authStep();
-  if ( err != nil ) { return d.closeWithError( err ) }
+  if ( err != nil ) { return d.sendError( err ) }
 
   err = d.gameStep();
-  if ( err != nil ) { return d.closeWithError( err ) }
+  if ( err != nil ) { return d.sendError( err ) }
 
   return nil
 }
@@ -38,10 +39,9 @@ func ( d *Dispatcher ) authStep () error {
   return controller.Authorize()
 }
 
-func ( d *Dispatcher ) closeWithError (err error) error {
+func ( d *Dispatcher ) sendError (err error) error {
     log.Error(err)
-    d.Client.SendMessage( &i.Message{ "message": fmt.Sprint( err ) } )
-    d.Client.Close()
+    d.Client.SendMessage( i.ErrorMessage(err.Error()) )
 
     return err
 }

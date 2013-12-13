@@ -6,6 +6,7 @@ import (
   i "./interfaces"
   "errors"
   log "./log"
+  "time"
 )
 
 const (
@@ -29,6 +30,7 @@ type Client struct {
   inBox       i.MessageChan
   messageBox  i.MessageChan
   worldRecieveDisabled bool
+  Closed    bool
 }
 
 func ( c *Client )  RemoteAddr () ( net.Addr ) {
@@ -43,6 +45,7 @@ func NewClient ( conn IConn ) ( *Client ) {
     outBox: make( i.MessageChan, OUTBOX_CAPACITY ),
     messageBox: make( i.MessageChan, CLIENT_BUFFER_CAPACITY ),
     worldRecieveDisabled: false,
+    Closed: false,
   }
   client.Init()
   return client
@@ -61,7 +64,13 @@ func ( c *Client ) Init () {
 }
 
 func ( c *Client ) Close () {
-  c.Connection.Close()
+  c.Closed = true
+
+  // Wait for write all messages
+  <- time.After(time.Second)
+  close(c.messageBox)
+
+  log.Client("Client closed.")
 }
 
 func ( c *Client ) SendMessage ( m *i.Message ) error {
@@ -74,9 +83,13 @@ func ( c *Client ) SendMessage ( m *i.Message ) error {
 }
 
 func ( c *Client ) startSendMessageLoop () {
+  defer c.Connection.Close()
+
   for message := range c.messageBox {
     c.Connection.WriteMessage( message )
   }
+
+  log.Client("Send message finished.")
 }
 
 func ( c *Client ) ReadMessage () ( *i.Message, error ) {
