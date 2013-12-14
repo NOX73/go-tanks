@@ -14,23 +14,26 @@ type Tank struct {
   Gun           *Gun
   Radius        int
   Health        int
+  Config        *WorldConfig `json:"-"`
 }
 
-func NewTank ( id int, coords *Coords, radius int, health int ) *Tank {
+func NewTank ( id int, coords *Coords, config *WorldConfig ) *Tank {
   tank := Tank{
     Id: id,
     Coords: coords,
     LeftMotor: 0,
     RightMotor: 0,
     Direction: 0,
-    Gun: &Gun{ Direction: 0, TurnAngle: 0 },
-    Radius: radius,
-    Health: health,
+    Gun: NewGun( config ),
+    Radius: config.TankRadius,
+    Health: config.TankHealth,
+    Config: config,
   }
   return &tank
 }
 
-func ( t *Tank ) CalculateMove ( speed float64 ) (*Coords, float64) {
+func ( t *Tank ) CalculateMove () (*Coords, float64) {
+  speed := t.Config.TankSpeed
 
   sumMotor := math.Min( t.LeftMotor , t.RightMotor )
 
@@ -60,26 +63,12 @@ func ( t *Tank ) ApplyMove ( c *Coords, d float64 ) {
   t.Direction = d
 }
 
-func ( t *Tank ) Fire () *Bullet {
-  return t.Gun.fire( t );
+func ( t *Tank ) TickParams () {
+  t.Gun.TickParams()
 }
 
-func ( t *Tank ) TurnGun ( speed float64 ) {
-  if ( t.Gun.TurnAngle < 0.1 && t.Gun.TurnAngle > -0.1 ){ return }
-
-  diff := t.Gun.TurnAngle
-
-  if diff > 0 {
-    diff = math.Min(speed, diff)
-  } else {
-    diff = math.Max(-speed, diff)
-  }
-
-  t.Gun.TurnAngle -= diff
-  t.Gun.Direction += diff 
-
-  if t.Gun.Direction < 0 { t.Gun.Direction += 360 }
-  if t.Gun.Direction > 360 { t.Gun.Direction -= 360 }
+func ( t *Tank ) Fire () *Bullet {
+  return t.Gun.Fire( t );
 }
 
 func ( t *Tank ) GetCoords () *Coords {

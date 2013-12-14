@@ -10,10 +10,11 @@ type Bullet struct {
   Tank          *Tank `json:"-"`
   Coords        *Coords
   Direction     float64
-  HitToTank     *Tank
+  HitToTank     *Tank `json:"-"`
+  Speed         float64
 }
 
-func NewBullet ( tank *Tank ) *Bullet {
+func NewBullet ( tank *Tank, config *WorldConfig ) *Bullet {
   direction := tank.Direction + tank.Gun.Direction
 
   if direction < 0 { direction += 360 }
@@ -30,14 +31,15 @@ func NewBullet ( tank *Tank ) *Bullet {
     Tank: tank,
     Coords: coords,
     Direction: direction,
+    Speed: config.BulletSpeed,
   }
 }
 
-func ( b *Bullet ) CalculateMove ( speed float64 ) (*Coords, float64) {
+func ( b *Bullet ) CalculateMove () (*Coords, float64) {
 
   radDirection := (math.Pi * b.Direction) / 180
-  x := b.Coords.X + math.Cos( radDirection ) * speed
-  y := b.Coords.Y + math.Sin( radDirection ) * speed
+  x := b.Coords.X + math.Cos( radDirection ) * b.Speed
+  y := b.Coords.Y + math.Sin( radDirection ) * b.Speed
 
   return &Coords{X: x, Y: y}, b.Direction
 }

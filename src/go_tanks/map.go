@@ -14,7 +14,7 @@ type Coords struct {
   Y   float64
 }
 
-func NewMap ( config *Config ) *Map {
+func NewMap ( config *WorldConfig ) *Map {
   return &Map{
     Width: config.mapWidth,
     Height: config.mapHeight,

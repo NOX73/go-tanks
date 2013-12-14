@@ -9,7 +9,10 @@ angular.module('app').controller('TankForm', ['$scope', '$tank', function ( $sco
   $scope.$watch( function(){return $tank.RightMotor}, function(val){ $scope.RightMotor = $tank.RightMotor } )
 
   $scope.$watch( function(){return $tank.Direction}, function(val){ $scope.Direction = $tank.Direction } )
+
   $scope.$watch( function(){return $tank.Gun.Direction}, function(val){ $scope.GunDirection = $tank.Gun.Direction } )
+  $scope.$watch( function(){return $tank.Gun.Temperature}, function(val){ $scope.GunTemperature = $tank.Gun.Temperature } )
+  $scope.$watch( function(){return $tank.Gun.ReloadProgress}, function(val){ $scope.GunReloadProgress = $tank.Gun.ReloadProgress } )
 
 
   $scope.$on("tank:message", function(event, message){
@@ -34,6 +37,8 @@ angular.module('app').controller('TankForm', ['$scope', '$tank', function ( $sco
     $tank.Coords.X = t.Coords.X
     $tank.Coords.Y = t.Coords.Y
     $tank.Gun.Direction = t.Gun.Direction
+    $tank.Gun.ReloadProgress = t.Gun.ReloadProgress
+    $tank.Gun.Temperature = t.Gun.Temperature
   }
 
   $scope.apply = function () {}

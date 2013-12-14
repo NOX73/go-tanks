@@ -7,25 +7,27 @@ import (
 )
 
 type World struct {
-  ObjectCounter    int
+  Config          WorldConfig
+  ObjectCounter   int
   Moment          time.Time
-  TickDelay       time.Duration
+  //TickDelay       time.Duration
   CommandChannel  i.MessageChan
   Clients         []i.Client
   Live            *Live
   TickCounter     int
-  TankRadius      int
-  TankHealth      int
+  //TankRadius      int
+  //TankHealth      int
 }
 
-func NewWorld ( config *Config ) *World {
+func NewWorld ( config WorldConfig ) *World {
 
-  world := &World{ 
-    TickDelay: config.TickDelay,
+  world := &World{
+    Config: config,
+    //TickDelay: config.TickDelay,
     CommandChannel: make(i.MessageChan, 5),
-    Live: NewLive( config ),
-    TankRadius: config.TankRadius,
-    TankHealth: config.TankHealth,
+    Live: NewLive( &config ),
+    //TankRadius: config.TankRadius,
+    //TankHealth: config.TankHealth,
   };
 
   return world
@@ -37,7 +39,7 @@ func (w *World) run () {
 }
 
 func (w *World) start () {
-  ticker := time.Tick( w.TickDelay * time.Millisecond );
+  ticker := time.Tick( w.Config.TickDelay * time.Millisecond );
   for now := range ticker {
     w.Moment = now
     w.TickCounter++
@@ -157,7 +159,7 @@ func ( w *World ) nextObjectId () int {
 func ( w *World ) addNewTank ( client i.Client ) {
   id := w.nextObjectId()
   coords := w.Map().GetRandomCoords()
-  tank := NewTank(id, coords, w.TankRadius, w.TankHealth)
+  tank := NewTank(id, coords, &w.Config)
 
   w.Live.AddTank( tank )
 
@@ -232,6 +234,7 @@ func ( w *World ) handleHits ( hits []*Bullet ) {
 
 func ( w *World ) fireTank ( tank *Tank ) {
   bullet := tank.Fire()
+  if bullet == nil { return }
   bullet.Id = w.nextObjectId()
   w.Live.AddBullet(bullet)
 }

@@ -7,7 +7,9 @@ angular.module('app').service('$tank', function () {
   this.LeftMotor = 0
   this.RightMotor = 0
   this.Gun = {
-    Direction: 0
+    Direction: 0,
+    ReloadProgress: 0,
+    Temperature: 0
   }
 
 });

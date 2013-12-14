@@ -5,22 +5,18 @@ import (
 )
 
 type Live struct {
+  Config      *WorldConfig
   Tanks       map[int]*Tank
   Map         *Map
-  TankSpeed   float64
-  GunSpeed    float64
-  BulletSpeed float64
   Bullets     []*Bullet
   ObjectIndex *ObjectIndex
 }
 
-func NewLive ( config *Config ) *Live {
+func NewLive ( config *WorldConfig ) *Live {
   return &Live {
     Tanks: make(map[int]*Tank),
     Map: NewMap( config ),
-    TankSpeed: config.TankSpeed,
-    GunSpeed: config.GunSpeed,
-    BulletSpeed: config.BulletSpeed,
+    Config: config,
     Bullets: make([]*Bullet, 0, 30),
     ObjectIndex: NewObjectIndex(float64(config.TankRadius * 2)),
   }
@@ -29,11 +25,10 @@ func NewLive ( config *Config ) *Live {
 func ( l *Live ) MoveTanksTick () {
 
   l.EachTanks ( func ( tank *Tank, _ int ) {
-    coords, direction := tank.CalculateMove( l.TankSpeed )
+    coords, direction := tank.CalculateMove()
 
     l.ObjectIndex.ApplyTankPosition(coords, direction, tank, l.Map)
-
-    tank.TurnGun( l.GunSpeed )
+    tank.TickParams()
   })
 
 }
@@ -43,7 +38,7 @@ func ( l *Live ) MoveBulletsTick () (hits []*Bullet) {
   hits = make([]*Bullet,0,5)
 
   l.EachBUllets ( func ( b *Bullet, _ int ) {
-    coords, direction := b.CalculateMove( l.BulletSpeed )
+    coords, direction := b.CalculateMove()
 
     tankHit, onMap := l.ObjectIndex.ValidateBulletPosition(coords, direction, b, l.Map)
 

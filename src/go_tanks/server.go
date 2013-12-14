@@ -32,7 +32,7 @@ func (srv *Server) run () {
 }
 
 func (srv *Server) runWorld () {
-  srv.world = NewWorld( srv.config )
+  srv.world = NewWorld( *srv.config.World )
   srv.world.run();
 }
 
