@@ -3,3 +3,4 @@
 /pkg
 /main
 *.test
+/config/deploy/*.rb
