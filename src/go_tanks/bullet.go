@@ -7,20 +7,28 @@ import (
 type Bullet struct {
   Id            int
   TankId        int
+  Tank          *Tank `json:"-"`
   Coords        *Coords
   Direction     float64
   HitToTank     *Tank
 }
 
 func NewBullet ( tank *Tank ) *Bullet {
-  direction := tank.Direction + tank.Gun.Direction; 
+  direction := tank.Direction + tank.Gun.Direction
 
   if direction < 0 { direction += 360 }
   if direction > 360 { direction -= 360 }
 
+  coords := &Coords{ tank.Coords.X, tank.Coords.Y }
+
+  radDirection := (math.Pi * direction) / 180
+  coords.X += math.Cos( radDirection ) * float64(tank.Radius)
+  coords.Y += math.Sin( radDirection ) * float64(tank.Radius)
+
   return &Bullet{
     TankId: tank.Id,
-    Coords: &Coords{ tank.Coords.X, tank.Coords.Y },
+    Tank: tank,
+    Coords: coords,
     Direction: direction,
   }
 }

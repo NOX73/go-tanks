@@ -21,7 +21,7 @@ func ( c *AuthController ) Authorize () error {
   c.readAuth();
 
   if ( !c.isAuthorized() ){
-    return errors.New( fmt.Sprintf("Authorization failed with credentials: %s / %s", c.Client.Login(), c.Client.Password() ) )
+    return errors.New( fmt.Sprintf("Authorization failed with credentials: %s / %s", *c.Client.Login(), *c.Client.Password() ) )
   }
 
   return nil
@@ -35,14 +35,17 @@ func ( c *AuthController ) sendHello () {
 }
 
 func ( c *AuthController ) readAuth () error {
-  m, err := c.Client.ReadMessage()
-  if err != nil { log.Error("Auth failed: ", err); return err }
 
-  err = v.ValidateAuthForm(m)
-  if( err != nil ) { c.Client.SendMessage( &i.Message{ "Type": "Error", "Message": err.Error() } ); return err }
+  for !c.isAuthorized() {
+    m, err := c.Client.ReadMessage()
+    if err != nil { log.Error("Auth failed: ", err); return err }
 
-  message := *m
-  c.Client.SetAuthCredentials( message["Login"].(string) , message["Password"].(string) )
+    err = v.ValidateAuthForm(m)
+    if( err != nil ) { c.Client.SendMessage( i.ErrorMessage( err.Error() ) ); continue; }
+
+    message := *m
+    c.Client.SetAuthCredentials( message["Login"].(string) , message["Password"].(string) )
+  }
 
   return nil
 }

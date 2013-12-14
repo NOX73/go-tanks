@@ -19,17 +19,17 @@ type Config struct {
 var DefaultConfig = Config{
         Address:    "0.0.0.0",
         Port:       9292,
-        TickDelay:  100,
+        TickDelay:  20,
         mapWidth:   1024,
         mapHeight:  768,
 
         //pixels per tick
-        TankSpeed:  10,
+        TankSpeed:  2,
         TankRadius: 10,
 
         // grad per tick
         GunSpeed:  2,
 
          // puxels per tick
-        BulletSpeed:  15,
+        BulletSpeed:  5,
 }

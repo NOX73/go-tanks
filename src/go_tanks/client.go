@@ -126,7 +126,9 @@ func ( c *Client ) startSendMessageLoop () {
 }
 
 func ( c *Client ) ReadMessage () ( *i.Message, error ) {
-  return <- c.inClientBox, nil
+  m, ok := <- c.inClientBox
+  if !ok { return nil, errors.New("Read channel was closed.") }
+  return m, nil
 }
 
 func ( c *Client ) SetAuthCredentials ( login, password string ) {
