@@ -33,7 +33,8 @@ type Client interface {
   OutBoxHasPlace () bool
 
   SendWorld ( *Message )
-  SetWorldRecieveDisabled( bool )
+  SetWorldDisabled( bool )
+  SetWorldFrequency ( val int )
 
   ReInit()
 }

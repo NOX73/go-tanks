@@ -44,6 +44,11 @@ angular.module('app').controller('WebSocks', function ( $scope ) {
     $scope.sendMessage(command)
   }
 
+  $scope.sendClientCommand = function ( command ) {
+    command.Type = "Client"
+    $scope.sendMessage(command)
+  }
+
   $scope.isAuth = function () { return $scope.state == 'auth' }
   $scope.isMessage = function () { return $scope.state == 'message' }
   $scope.isSession = function () { return $scope.state == 'session' }
@@ -58,5 +63,13 @@ angular.module('app').controller('WebSocks', function ( $scope ) {
   $scope.setGun = function () { $scope.state = 'gun' }
   $scope.setTank = function () { $scope.state = 'tank' }
 
-  $scope.$on('auth:success', $scope.setControl )
+  $scope.$on('auth:success', function() {
+    $scope.setControl()
+    if (localStorage.worldFrequency)
+      $scope.sendFreqency(localStorage.worldFrequency)
+  } )
+
+  $scope.sendFreqency = function (val) {
+    $scope.sendClientCommand({ WorldFrequency: parseInt(val) })
+  }
 });

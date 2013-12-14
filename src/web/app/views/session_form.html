@@ -1,5 +1,20 @@
-<form ng-submit="resetSession()" ng-controller="SessionForm" ng-show="isSession()" role="form" class="form-inline">
-  <input class="btn btn-default" type="submit" value="Reconnect">
-  <input class="btn btn-primary" type="button" value="Close" ng-click="closeSession()">
-</form>
+<div ng-controller="SessionForm" ng-show="isSession()" >
 
+  <form ng-submit="resetSession()" role="form" class="form-inline">
+    <input class="btn btn-default" type="submit" value="Reconnect">
+    <input class="btn btn-primary" type="button" value="Close" ng-click="closeSession()">
+  </form>
+
+  <p></p>
+
+  <form ng-submit="setFreqency()" role="form" class="form-horizontal">
+
+    <div class="form-group">
+      <label class="control-label col-sm-3">World Frequency</label>
+      <div class="col-sm-9">
+        <input type="number" ng-model="WorldFrequency" ng-change="setFreqency()" placeholder="WorldFrequency" class="form-control" min="0" max="100" step="1">
+      </div>
+    </div>
+
+  </form>
+</div>

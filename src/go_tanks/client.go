@@ -33,7 +33,12 @@ type Client struct {
   inClientBox   i.MessageChan
   outClientBox  i.MessageChan
 
-  worldRecieveDisabled bool
+  // world would be receive every n ticks
+  worldFrequency  int
+  worldFrequencyN int
+
+  // do not send world messages
+  worldDisabled bool
   Closed        bool
 }
 
@@ -49,7 +54,7 @@ func NewClient ( conn IConn ) ( *Client ) {
     outBox: make( i.MessageChan, OUTBOX_CAPACITY ),
     inClientBox: make( i.MessageChan, CLIENT_BUFFER_CAPACITY ),
     outClientBox: make( i.MessageChan, CLIENT_BUFFER_CAPACITY ),
-    worldRecieveDisabled: false,
+    worldDisabled: false,
     Closed: false,
   }
   client.Init()
@@ -173,14 +178,25 @@ func ( c *Client ) OutClientBox () i.MessageChan {
 }
 
 func ( c *Client ) SendWorld ( m *i.Message ) {
-  if( c.worldRecieveDisabled ) { return }
+  if( c.worldDisabled ) { return }
 
-  err := c.SendMessage(m)
-  if( err != nil ) { log.Error(err) }
+  if( c.worldFrequencyN == 0 ) {
+    c.worldFrequencyN = c.worldFrequency
+    err := c.SendMessage(m)
+    if( err != nil ) { log.Error(err) }
+  } else {
+    c.worldFrequencyN--
+  }
+
 }
 
-func ( c *Client ) SetWorldRecieveDisabled ( val bool ) {
-  c.worldRecieveDisabled = val
+func ( c *Client ) SetWorldDisabled ( val bool ) {
+  c.worldDisabled = val
+}
+
+func ( c *Client ) SetWorldFrequency ( val int ) {
+  c.worldFrequency = val
+  c.worldFrequencyN = c.worldFrequency
 }
 
 func ( c *Client ) OutBoxHasPlace () bool {
