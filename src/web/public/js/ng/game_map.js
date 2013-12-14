@@ -1,22 +1,44 @@
 angular.module('app').controller('GameMap', ['$scope', '$tank', function ( $scope, $tank ) {
-
   var stage = new createjs.Stage("gameMap");
 
   var tanks = {}
   var bullets = {}
 
+  var tankSpriteSheet = new createjs.SpriteSheet({
+    images: ["/public/img/tanks.png"],
+    frames: [ [ 13, 133, 132, 83, 0, 65, 41 ] ]
+  });
+
+  var gunSpriteSheet = new createjs.SpriteSheet({
+    images: ["/public/img/tanks.png"],
+    frames: [ [ 40, 237, 93, 45, 0, 24, 22 ] ]
+  });
+
   function Tank( tank ){
     this.id = tank.Id
-    this.circle = new createjs.Shape();
-    this.circle.graphics.beginFill("red").drawCircle(0, 0, 10);
+    this.container = new createjs.Container()
+
+    this.tankSprite = new createjs.Sprite(tankSpriteSheet, 0)
+    this.gunSprite = new createjs.Sprite(gunSpriteSheet, 0)
+
+    this.container.addChild(this.tankSprite)
+    this.container.addChild(this.gunSprite)
+
+    this.container.scaleX = 0.15
+    this.container.scaleY = 0.15
+
     this.update( tank )
   }
 
   Tank.prototype = {
 
     update: function ( tank ) {
-      this.circle.x = tank.Coords.X
-      this.circle.y = tank.Coords.Y
+
+      this.container.x = tank.Coords.X
+      this.container.y = tank.Coords.Y
+      this.container.rotation = tank.Direction
+
+      this.gunSprite.rotation = tank.Gun.Direction
     }
 
   }
@@ -44,7 +66,7 @@ angular.module('app').controller('GameMap', ['$scope', '$tank', function ( $scop
 
       if( !tanks[ tank.Id ] ) {
         tanks[ tank.Id ] = new Tank( tank )
-        stage.addChild(tanks[ tank.Id ].circle);
+        stage.addChild(tanks[ tank.Id ].container);
       }else{
         tanks[ tank.Id ].update( tank )
       }
@@ -53,7 +75,7 @@ angular.module('app').controller('GameMap', ['$scope', '$tank', function ( $scop
     _.forIn( tanks,  function( tank ) {
 
       if( tanksIds.indexOf( tank.id ) == -1 ){
-        stage.removeChild( tank.circle )
+        stage.removeChild( tank.container )
         delete tanks[ tank.id ]
       }
 
