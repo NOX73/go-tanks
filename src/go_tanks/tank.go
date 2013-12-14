@@ -13,9 +13,10 @@ type Tank struct {
   RightMotor    float64
   Gun           *Gun
   Radius        int
+  Health        int
 }
 
-func NewTank ( id int, coords *Coords, radius int ) *Tank {
+func NewTank ( id int, coords *Coords, radius int, health int ) *Tank {
   tank := Tank{
     Id: id,
     Coords: coords,
@@ -24,6 +25,7 @@ func NewTank ( id int, coords *Coords, radius int ) *Tank {
     Direction: 0,
     Gun: &Gun{ Direction: 0, TurnAngle: 0 },
     Radius: radius,
+    Health: health,
   }
   return &tank
 }

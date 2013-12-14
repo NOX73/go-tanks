@@ -15,6 +15,7 @@ type World struct {
   Live            *Live
   TickCounter     int
   TankRadius      int
+  TankHealth      int
 }
 
 func NewWorld ( config *Config ) *World {
@@ -24,6 +25,7 @@ func NewWorld ( config *Config ) *World {
     CommandChannel: make(i.MessageChan, 5),
     Live: NewLive( config ),
     TankRadius: config.TankRadius,
+    TankHealth: config.TankHealth,
   };
 
   return world
@@ -155,7 +157,7 @@ func ( w *World ) nextObjectId () int {
 func ( w *World ) addNewTank ( client i.Client ) {
   id := w.nextObjectId()
   coords := w.Map().GetRandomCoords()
-  tank := NewTank(id, coords, w.TankRadius)
+  tank := NewTank(id, coords, w.TankRadius, w.TankHealth)
 
   w.Live.AddTank( tank )
 
@@ -207,15 +209,23 @@ func ( w *World ) handleHits ( hits []*Bullet ) {
     w.Live.removeBullet(h)
     tank := h.HitToTank
 
-    var client i.Client
+    if tank.Health == 0 { continue }
+    tank.Health -= 1
 
-    for _, client = range w.Clients {
-      if client.GetTank().(*Tank) == tank { break }
+    log.World("Tank ", tank.Id, " was hit.")
+    if tank.Health != 0 { continue }
+
+    var client i.Client = nil
+    for _, c := range w.Clients {
+      if c.GetTank().(*Tank) == tank { client = c; break }
     }
+
+    // Already removed ?
+    if client == nil { continue }
 
     w.removeClient(client)
 
-    message := &i.Message{"TypeId": i.HIT_TANK}
+    message := &i.Message{"TypeId": i.DESTROY_TANK}
     client.InBox() <- message
   }
 }

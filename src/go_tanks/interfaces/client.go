@@ -6,6 +6,7 @@ const (
   REMOVE_CLIENT
   TANK_COMMAND
   HIT_TANK
+  DESTROY_TANK
 )
 
 type Message            map[string]interface{}

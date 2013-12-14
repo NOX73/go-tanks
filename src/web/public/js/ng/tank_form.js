@@ -1,14 +1,6 @@
 angular.module('app').controller('TankForm', ['$scope', '$tank', function ( $scope, $tank ) {
-
-  //$scope.Id = 0
-  //$scope.X = 0
-  //$scope.Y = 0
-  //$scope.LeftMotor = 0
-  //$scope.RightMotor = 0
-  //$scope.Direction = 0
-  //$scope.GunDirection = 0
-
   $scope.$watch( function(){return $tank.Id}, function(val){ $scope.Id = $tank.Id } )
+  $scope.$watch( function(){return $tank.Health}, function(val){ $scope.Health = $tank.Health } )
 
   $scope.$watch( function(){return $tank.Coords.X}, function(val){ $scope.X = $tank.Coords.X } )
   $scope.$watch( function(){return $tank.Coords.Y}, function(val){ $scope.Y = $tank.Coords.Y } )
@@ -35,6 +27,7 @@ angular.module('app').controller('TankForm', ['$scope', '$tank', function ( $sco
 
   $scope.setTank = function ( t ) {
     $tank.Id = t.Id
+    $tank.Health = t.Health
     $tank.RightMotor = t.RightMotor
     $tank.LeftMotor = t.LeftMotor
     $tank.Direction = t.Direction

@@ -46,9 +46,11 @@ func ( c *GameController ) JoinToGame () error {
     case message, _ := <- inBox:
 
       switch message.GetTypeId() {
-      case i.HIT_TANK:
+      case i.DESTROY_TANK:
         c.Client.SendMessage( &i.Message{"Type":"Hit", "Message": "Your are die :("} )
         return nil
+      case i.HIT_TANK:
+        c.Client.SendMessage( &i.Message{"Type":"Hit", "Message": "Tank hit."} )
       }
 
     }
