@@ -10,15 +10,14 @@ const (
 
 type Message            map[string]interface{}
 type MessageChan        chan *Message
-type Tank interface {}
 
 type Client interface {
   SendMessage ( *Message ) error
   ReadMessage () ( *Message, error )
 
   SetAuthCredentials ( login, password string)
-  SetTank ( interface{} )
-  GetTank () interface{}
+  SetTank ( Tank )
+  GetTank () Tank
   HasTank () bool
 
   Login () *string

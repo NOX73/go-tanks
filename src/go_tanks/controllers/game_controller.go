@@ -6,6 +6,7 @@ import (
   v "../validators"
   h "./handlers"
   "errors"
+  "fmt"
 )
 
 type GameController struct {
@@ -18,9 +19,10 @@ func ( c *GameController ) JoinToGame () error {
   c.World.NewTank( c.Client )
   message := *( <-c.Client.InBox() )
 
-  message["Message"] = "Your tank id"
+  tank := message["Tank"].(i.Tank)
+  c.Client.SetTank( tank )
 
-  c.Client.SetTank( message["Tank"] )
+  message["Message"] = fmt.Sprint("Your tank id = ", tank.GetId())
   c.Client.SendMessage( &message )
 
   inClientBox := c.Client.InClientBox()

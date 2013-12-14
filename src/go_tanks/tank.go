@@ -84,6 +84,10 @@ func ( t *Tank ) GetCoords () *Coords {
   return t.Coords
 }
 
+func ( t *Tank ) GetId () int {
+  return t.Id
+}
+
 func ( t *Tank ) GetRadius () int {
   return t.Radius
 }

@@ -153,11 +153,11 @@ func ( c *Client ) HasTank () bool {
   return c.Tank != nil
 }
 
-func ( c *Client ) SetTank ( tank interface{} ) {
+func ( c *Client ) SetTank ( tank i.Tank ) {
   c.Tank = tank.(*Tank)
 }
 
-func ( c *Client ) GetTank () interface{} {
+func ( c *Client ) GetTank () i.Tank {
   return c.Tank
 }
 
