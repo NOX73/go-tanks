@@ -9,6 +9,7 @@ import (
   "github.com/gorilla/websocket"
   "github.com/howeyc/fsnotify"
   "time"
+  "io/ioutil"
 )
 
 type Server struct {
@@ -67,8 +68,17 @@ func ( s *Server ) parseTemplates () {
   t = template.New("layout")
   t.Funcs(template.FuncMap{"ng": func(s string)(string){return "{{" + s +"}}"}})
 
-  _, err := t.ParseGlob(viewPath("*.html"))
+  _, err := t.ParseGlob(viewPath("**.html"))
   if err != nil { log.Fatal(err) }
+
+  subdirs, _ := ioutil.ReadDir(viewPath(""))
+  for _, dir := range subdirs {
+    if !dir.IsDir() { continue }
+    fullPath := viewPath(dir.Name())
+    _, err := t.ParseGlob( path.Join( fullPath, "*.html" ) )
+    if err != nil { log.Fatal(err) }
+  }
+
 
   s.templates["layout"] = t
 

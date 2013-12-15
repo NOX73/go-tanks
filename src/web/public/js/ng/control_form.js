@@ -1,7 +1,7 @@
 angular.module('app').controller('ControlForm', ['$scope', '$tank', function ( $scope, $tank ) {
 
-  $scope.$watch( function(){return $tank.LeftMotor}, function(val){ $scope.LeftMotor = $tank.LeftMotor } )
-  $scope.$watch( function(){return $tank.RightMotor}, function(val){ $scope.RightMotor = $tank.RightMotor } )
+  $scope.$watch( function(){ return $tank.LeftMotor }, function(val){ $scope.LeftMotor = $tank.LeftMotor } )
+  $scope.$watch( function(){ return $tank.RightMotor }, function(val){ $scope.RightMotor = $tank.RightMotor } )
 
   $scope.apply = function () {
 

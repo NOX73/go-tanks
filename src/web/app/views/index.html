@@ -2,37 +2,12 @@
 
 {{template "navbar.html" .}}
 
-<div class="container" ng-app="app" ng-controller="WebSocks">
+<div class="container" ng-controller="WebSocks">
   <div class="well" >
-
-    <div class="row">
-
-      <div class="col-md-8">
-        {{template "tabs.html" .}}
-        <p></p>
-        {{template "auth_form.html" .}}
-        {{template "control_form.html" .}}
-        {{template "message_form.html" .}}
-        {{template "session_form.html" .}}
-        {{template "tank_form.html" .}}
-      </div>
-
-      <div class="col-md-4">
-
-        <h5>Messages: </h5>
-
-        <ul>
-          <li ng-repeat="message in messages">
-          <span>{{ ng "message.text" }}</span>
-          </li>
-        </ul>
-
-      </div>
-
-    </div><!-- /row -->
-
-
-
+    {{template "home.html" .}}
+    {{template "about.html" .}}
+    {{template "api.html" .}}
+    {{template "help.html" .}}
   </div><!-- /well -->
 
 

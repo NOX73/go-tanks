@@ -17,7 +17,7 @@ angular.module('app').controller('WebSocks', function ( $scope ) {
       }
 
       switch(message["Type"]){
-        case "Wrold":
+        case "World":
           $scope.$broadcast('world:message', message)
           break;
 
