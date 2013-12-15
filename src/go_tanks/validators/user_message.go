@@ -8,6 +8,7 @@ import (
 var UserMessageValidators = map[string]func( m *i.Message )error{
   "TankCommand": ValidateTankCommandMessage,
   "Client": ValidateClientMessage,
+  "Ping": ValidatePingMessage,
 }
 
 func ValidateUserMessage ( m *i.Message ) error {

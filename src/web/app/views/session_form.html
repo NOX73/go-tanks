@@ -17,4 +17,18 @@
     </div>
 
   </form>
+  
+  <form ng-submit="ping()" role="form" class="form-horizontal">
+
+    <div class="form-group">
+      <label class="control-label col-sm-3">Ping, ms</label>
+      <div class="col-sm-9 input-group">
+        <input type="number" disabled ng-model="pingValue" placeholder="Ping value" class="form-control" >
+        <span class="input-group-btn">
+          <input class="btn btn-primary" type="submit" value="Ping">
+        </span>
+      </div>
+    </div>
+
+  </form>
 </div>

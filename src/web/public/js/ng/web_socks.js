@@ -16,13 +16,20 @@ angular.module('app').controller('WebSocks', function ( $scope ) {
         $scope.$digest();
       }
 
-      if( message["Type"] == "World" ) {
-        $scope.$broadcast('world:message', message)
+      switch(message["Type"]){
+        case "Wrold":
+          $scope.$broadcast('world:message', message)
+          break;
+
+        case "Tank":
+          $scope.$broadcast('tank:message', message)
+          break;
+
+        case "Pong":
+          $scope.$broadcast('message:pong', message)
+          break;
       }
 
-      if( message["Type"] == "Tank" ) {
-        $scope.$broadcast('tank:message', message)
-      }
     }
   }
 
@@ -36,7 +43,7 @@ angular.module('app').controller('WebSocks', function ( $scope ) {
     if( !message ) { message = $scope.messageText } else { message = JSON.stringify( message ) }
 
     socket.send( message );
-    $scope.messageText = '';
+    //$scope.messageText = '';
   }
 
   $scope.sendTankCommand = function ( command ) {
@@ -53,14 +60,12 @@ angular.module('app').controller('WebSocks', function ( $scope ) {
   $scope.isMessage = function () { return $scope.state == 'message' }
   $scope.isSession = function () { return $scope.state == 'session' }
   $scope.isControl = function () { return $scope.state == 'control' }
-  $scope.isGun = function () { return $scope.state == 'gun' }
   $scope.isTank = function () { return $scope.state == 'tank' }
 
   $scope.setAuth = function () { $scope.state = 'auth' }
   $scope.setMessage = function () { $scope.state = 'message' }
   $scope.setSession = function () { $scope.state = 'session' }
   $scope.setControl = function () { $scope.state = 'control' }
-  $scope.setGun = function () { $scope.state = 'gun' }
   $scope.setTank = function () { $scope.state = 'tank' }
 
   $scope.$on('auth:success', function() {

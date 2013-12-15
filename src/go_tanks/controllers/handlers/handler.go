@@ -8,6 +8,7 @@ import (
 var messageHandlers = map[string]func( i.World, i.Client, *i.Message )error{
   "Client": ClientMessageHandler,
   "TankCommand": TankCommandMessageHandler,
+  "Ping": PingMessageHandler,
 }
 
 func HandleMessage( w i.World, c i.Client, m *i.Message ) error {
