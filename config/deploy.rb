@@ -24,6 +24,8 @@ set :stage, :production
  set :go_build_os, 'linux'
  set :go_build_arch, 'amd64'
 
+ logger.level = Logger::INFO
+
 namespace :deploy do
 
   desc 'Restart application'

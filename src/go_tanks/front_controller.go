@@ -1,24 +1,28 @@
 package go_tanks
 
 import (
-  log "./log"
+	log "./log"
 )
 
 type FrontController struct {
-  World           *World
-  ClientsChannel  <-chan *Client
+	ClientsChannel <-chan *Client
+	rooms          *Rooms
 }
 
-func (fc *FrontController) Accept () {
-  for {
-    client := <- fc.ClientsChannel
-    log.Client("New client connected ( ", client.RemoteAddr(), " )");
-
-    fc.processClient(client)
-  }
+func NewFrontController(channel <-chan *Client, rooms *Rooms) *FrontController {
+	return &FrontController{ClientsChannel: channel, rooms: rooms}
 }
 
-func (fc *FrontController) processClient (client *Client) {
-  dispatcher := Dispatcher{ Client: client, World: fc.World }
-  go dispatcher.run()
+func (fc *FrontController) Accept() {
+	for {
+		client := <-fc.ClientsChannel
+		log.Client("New client connected ( ", client.RemoteAddr(), " )")
+
+		fc.processClient(client)
+	}
+}
+
+func (fc *FrontController) processClient(client *Client) {
+	dispatcher := Dispatcher{Client: client, Rooms: fc.rooms}
+	go dispatcher.run()
 }

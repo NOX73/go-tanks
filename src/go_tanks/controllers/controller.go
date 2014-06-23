@@ -1,10 +1,10 @@
 package go_tanks
 
 import (
-  i "../interfaces"
+	i "../interfaces"
 )
 
 type Controller struct {
-  Client  i.Client
-  World   i.World
+	Client i.Client
+	Rooms  i.Rooms
 }

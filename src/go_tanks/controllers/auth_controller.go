@@ -1,55 +1,62 @@
 package go_tanks
 
 import (
-  "errors"
-  log "../log"
-  i "../interfaces"
-  "fmt"
-  v "../validators"
+	"errors"
+	"fmt"
+
+	i "../interfaces"
+	log "../log"
+	v "../validators"
 )
 
 const (
-  HELLO = "Hello! You should authorize befor join the game!"
+	HELLO = "Hello! You should authorize befor join the game!"
 )
 
 type AuthController struct {
-  Controller
+	Controller
 }
 
-func ( c *AuthController ) Authorize () error {
-  c.sendHello();
-  c.readAuth();
+func (c *AuthController) Authorize() error {
+	c.sendHello()
+	c.readAuth()
 
-  if ( !c.isAuthorized() ){
-    return errors.New( fmt.Sprintf("Authorization failed with credentials: %s / %s", *c.Client.Login(), *c.Client.Password() ) )
-  }
+	if !c.isAuthorized() {
+		return errors.New(fmt.Sprintf("Authorization failed with credentials: %s / %s", *c.Client.Login(), *c.Client.Password()))
+	}
 
-  return nil
+	return nil
 }
 
-func ( c *AuthController ) sendHello () {
-  c.Client.SendMessage( &i.Message{
-    "Message":  HELLO,
-    "Type": "Auth",
-  })
+func (c *AuthController) sendHello() {
+	c.Client.SendMessage(&i.Message{
+		"Message": HELLO,
+		"Type":    "Auth",
+	})
 }
 
-func ( c *AuthController ) readAuth () error {
+func (c *AuthController) readAuth() error {
 
-  for !c.isAuthorized() {
-    m, err := c.Client.ReadMessage()
-    if err != nil { log.Error("Auth failed: ", err); return err }
+	for !c.isAuthorized() {
+		m, err := c.Client.ReadMessage()
+		if err != nil {
+			log.Error("Auth failed: ", err)
+			return err
+		}
 
-    err = v.ValidateAuthForm(m)
-    if( err != nil ) { c.Client.SendMessage( i.ErrorMessage( err.Error() ) ); continue; }
+		err = v.ValidateAuthForm(m)
+		if err != nil {
+			c.Client.SendMessage(i.ErrorMessage(err.Error()))
+			continue
+		}
 
-    message := *m
-    c.Client.SetAuthCredentials( message["Login"].(string) , message["Password"].(string) )
-  }
+		message := *m
+		c.Client.SetAuthCredentials(message["Login"].(string), message["Password"].(string), message["Room"].(string))
+	}
 
-  return nil
+	return nil
 }
 
-func ( c * AuthController ) isAuthorized () bool {
-  return len( *c.Client.Login() ) > 0
+func (c *AuthController) isAuthorized() bool {
+	return len(*c.Client.Login()) > 0
 }

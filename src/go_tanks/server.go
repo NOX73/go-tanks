@@ -1,38 +1,31 @@
 package go_tanks
 
-import(
-  log "./log"
+import (
+	log "./log"
 )
 
 func NewServer(cfg Config) *Server {
-  return &Server{ config: &cfg }
+	return &Server{config: &cfg}
 }
 
 type Server struct {
-  config          *Config
-  world           *World
-  frontController *FrontController
-};
-
-func (srv *Server) Run () {
-  srv.runWorld();
-
-  log.Server("Server starting...");
-  srv.run()
+	config *Config
+	world  *World
+	rooms  *Rooms
 }
 
-func (srv *Server) run () {
-  tcpServer := TCPServer { Port: srv.config.Port, Address: srv.config.Address }
-  channel := ClientChannel
+func (srv *Server) Run() {
 
-  go tcpServer.run( channel )
-
-  srv.frontController = &FrontController{ World: srv.world, ClientsChannel: channel }
-  srv.frontController.Accept();
+	log.Server("Server starting...")
+	srv.run()
 }
 
-func (srv *Server) runWorld () {
-  srv.world = NewWorld( *srv.config.World )
-  srv.world.run();
-}
+func (srv *Server) run() {
+	tcpServer := TCPServer{Port: srv.config.Port, Address: srv.config.Address}
+	channel := ClientChannel
 
+	go tcpServer.run(channel)
+	rooms := NewRooms(*srv.config.World)
+
+	NewFrontController(channel, rooms).Accept()
+}
