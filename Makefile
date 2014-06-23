@@ -10,3 +10,6 @@ build:
 
 build_linux:
 	@( GOPATH=`pwd` GOOS=linux GOARCH=amd64 go build main.go )
+
+deploy: 
+	@( bundle exec cap -q production deploy)
